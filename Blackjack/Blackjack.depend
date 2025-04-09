@@ -1,0 +1,150 @@
+# depslib dependency file v1.0
+1621718504 source:c:\users\ryzen\documents\escuela\c++\blackjack\menu.cpp
+	<iostream>
+	"Menu.h"
+	<conio.h>
+	"Titulos.h"
+	"Utileria.h"
+
+1621718627 source:c:\users\ryzen\documents\escuela\c++\blackjack\main.cpp
+	<iostream>
+	<windows.h>
+	"Menu.h"
+	"Utileria.h"
+	"Cartas.h"
+	<time.h>
+
+1621717080 c:\users\ryzen\documents\escuela\c++\blackjack\menu.h
+
+1621798178 source:c:\users\ryzen\documents\escuela\c++\blackjack\utileria.cpp
+	"Utileria.h"
+	<windows.h>
+	<iostream>
+
+1621716655 c:\users\ryzen\documents\escuela\c++\blackjack\utileria.h
+
+1621724273 c:\users\ryzen\documents\escuela\c++\blackjack\cartas.h
+
+1621886020 source:c:\users\ryzen\documents\escuela\c++\blackjack\cartas.cpp
+	<conio.h>
+	<iostream>
+	<cstdlib>
+	"Utileria.h"
+	"Cartas.h"
+	<unistd.h>
+	<string>
+	"Titulos.h"
+	<time.h>
+	<windows.h>
+	"Titulos.h"
+
+1621277993 source:c:\users\ryzen\documents\escuela\c++\blackjack\titulos.cpp
+	"Utileria.h"
+	<iostream>
+
+1621724234 c:\users\ryzen\documents\escuela\c++\blackjack\titulos.h
+
+1653085927 source:c:\users\isaky\downloads\blackjack\blackjack\cartas.cpp
+	<conio.h>
+	<iostream>
+	<cstdlib>
+	<unistd.h>
+	<string>
+	<time.h>
+	<windows.h>
+	"Utileria.h"
+	"Cartas.h"
+	"Titulos.h"
+	"ColorConsola.h"
+	"Titulos.h"
+
+1653094904 c:\users\isaky\downloads\blackjack\blackjack\utileria.h
+
+1653083380 c:\users\isaky\downloads\blackjack\blackjack\cartas.h
+
+1653083578 c:\users\isaky\downloads\blackjack\blackjack\titulos.h
+
+1653083220 source:c:\users\isaky\downloads\blackjack\blackjack\main.cpp
+	<iostream>
+	<windows.h>
+	<time.h>
+	"Menu.h"
+	"Utileria.h"
+	"Cartas.h"
+
+1653083561 c:\users\isaky\downloads\blackjack\blackjack\menu.h
+
+1653083220 source:c:\users\isaky\downloads\blackjack\blackjack\menu.cpp
+	<iostream>
+	<conio.h>
+	"Menu.h"
+	"Titulos.h"
+	"Utileria.h"
+
+1653083525 source:c:\users\isaky\downloads\blackjack\blackjack\titulos.cpp
+	<iostream>
+	"Utileria.h"
+	"ColorConsola.h"
+
+1653093831 source:c:\users\isaky\downloads\blackjack\blackjack\utileria.cpp
+	<windows.h>
+	<iostream>
+	"Utileria.h"
+	"ColorConsola.h"
+
+1653094995 c:\users\isaky\downloads\blackjack\blackjack\colorconsola.h
+	<iostream>
+	<windows.h>
+
+1653687329 source:c:\users\isaky\downloads\blackjack isok\blackjack\main.cpp
+	<iostream>
+	<windows.h>
+	<time.h>
+	"Menu.h"
+	"Utileria.h"
+	"Cartas.h"
+
+1653687329 c:\users\isaky\downloads\blackjack isok\blackjack\menu.h
+
+1653687329 c:\users\isaky\downloads\blackjack isok\blackjack\utileria.h
+
+1653083380 c:\users\isaky\downloads\blackjack isok\blackjack\cartas.h
+
+1653687347 source:c:\users\isaky\downloads\blackjack isok\blackjack\menu.cpp
+	<iostream>
+	<conio.h>
+	"Menu.h"
+	"Titulos.h"
+	"Utileria.h"
+
+1653083578 c:\users\isaky\downloads\blackjack isok\blackjack\titulos.h
+
+1653083525 source:c:\users\isaky\downloads\blackjack isok\blackjack\titulos.cpp
+	<iostream>
+	"Utileria.h"
+	"ColorConsola.h"
+
+1653094995 c:\users\isaky\downloads\blackjack isok\blackjack\colorconsola.h
+	<iostream>
+	<windows.h>
+
+1653093831 source:c:\users\isaky\downloads\blackjack isok\blackjack\utileria.cpp
+	<windows.h>
+	<iostream>
+	"Utileria.h"
+	"ColorConsola.h"
+
+1653685309 source:c:\users\isaky\downloads\blackjack isok\blackjack\cartas.cpp
+	<conio.h>
+	<iostream>
+	<cstdlib>
+	<unistd.h>
+	<string>
+	<time.h>
+	<windows.h>
+	"Utileria.h"
+	"Cartas.h"
+	"Titulos.h"
+	"ColorConsola.h"
+	"Titulos.h"
+
