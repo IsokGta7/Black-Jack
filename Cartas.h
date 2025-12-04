@@ -2,9 +2,11 @@
 #ifndef CARTAS_H_INCLUDED
 #define CARTAS_H_INCLUDED
 
+#include <string>
+
 struct Carta {
     int palo; /**< El palo de la carta */
-    int numero; /**< El número de la carta */
+    int numero; /**< El nmero de la carta */
 };
 //***************************************************************************************************************************************************************************************************************************************
 struct Baraja {
@@ -18,17 +20,17 @@ struct Baraja {
  */
 void Instrucciones();
 //***************************************************************************************************************************************************************************************************************************************
-/** \brief Función para imprimir la pantalla del juego.
+/** \brief Funcin para imprimir la pantalla del juego.
  * \details Imprime y maneja toda la pantalla de juego del programa.
  * \return void Imprime la pantalla del juego.
  *
  */
 void Jugar();
 //***************************************************************************************************************************************************************************************************************************************
-/** \brief Funcion que maneja la impresión de una carta de una baraja inglesa
- * \details Imprime una carta en posición (x,y) utilizando un marco de w x h dimensiones
- * \param x int Posición x donde se va a imprimir
- * \param y int Posición y donde se va a imprimir
+/** \brief Funcion que maneja la impresin de una carta de una baraja inglesa
+ * \details Imprime una carta en posicin (x,y) utilizando un marco de w x h dimensiones
+ * \param x int Posicin x donde se va a imprimir
+ * \param y int Posicin y donde se va a imprimir
  * \param w int Ancho de la carta
  * \param h int Altura de la carta
  * \param carta int ID de la carta en el arreglo de la estructura Baraja
@@ -38,9 +40,9 @@ void Jugar();
  */
 void ImprimirCarta(int x, int y, int w, int h, int carta, Baraja & baraja);
 //***************************************************************************************************************************************************************************************************************************************
-/** \brief Función para imprimir la pantalla de créditos.
- * \details Imprime y maneja toda la pantalla de créditos del programa.
- * \return void Imprime la pantalla de créditos.
+/** \brief Funcin para imprimir la pantalla de crditos.
+ * \details Imprime y maneja toda la pantalla de crditos del programa.
+ * \return void Imprime la pantalla de crditos.
  *
  */
 void Creditos();
@@ -54,7 +56,7 @@ void Creditos();
 void LlenarBaraja(Baraja & baraja);
 //***************************************************************************************************************************************************************************************************************************************
 /** \brief Revuelve el arreglo de cartas en una estructura de baraja.
- * \details Toma las cartas de la estructura baraja y cambia sus posiciones de forma aleatoria un número aleatorio de veces (entre 300 y 500).
+ * \details Toma las cartas de la estructura baraja y cambia sus posiciones de forma aleatoria un nmero aleatorio de veces (entre 300 y 500).
  * \param baraja Baraja& Estructura de la baraja
  * \return void Modifica la estructura para revolver las cartas.
  *
@@ -62,22 +64,22 @@ void LlenarBaraja(Baraja & baraja);
 void Shuffle(Baraja & baraja);
 //***************************************************************************************************************************************************************************************************************************************
 /** \brief Imprime los iconos de las esquinas de una carta
- * \details Imprime el simbolo del palo y el número en la esquina superior izquierda y la esquina inferior derecha.
+ * \details Imprime el simbolo del palo y el nmero en la esquina superior izquierda y la esquina inferior derecha.
  * \param carta int ID de la carta en el arreglo de la estructura Baraja
- * \param x int Posición x donde se va a imprimir
- * \param y int Posición y donde se va a imprimir
+ * \param x int Posicin x donde se va a imprimir
+ * \param y int Posicin y donde se va a imprimir
  * \param w int Ancho de la carta
  * \param h int Altura de la carta
  * \param baraja Baraja& Estructura de la baraja
  * \param sibmolocarta std::string Simbolo correspondiente al palo de la carta
- * \param numerocarta std::string Letra/Número correspondiente a la carta
+ * \param numerocarta std::string Letra/Nmero correspondiente a la carta
  * \return void Imprime el numero y palo en las esquinas de una carta
  *
  */
 void ImprimirEsquinas(int carta, int x, int y, int w, int h, Baraja & baraja, std::string sibmolocarta, std::string numerocarta);
 //***************************************************************************************************************************************************************************************************************************************
-/** \brief Función que determina el simbolo (en string) de una carta basado en el palo.
- * \details Dependiendo de los datos de la carta en la estructura Carta la función devuelve el símbolo del palo correspondiente.
+/** \brief Funcin que determina el simbolo (en string) de una carta basado en el palo.
+ * \details Dependiendo de los datos de la carta en la estructura Carta la funcin devuelve el smbolo del palo correspondiente.
  * \param carta int ID de la carta en el arreglo de la estructura Baraja
  * \param baraja Baraja& Estructura de la baraja
  * \return std::string Devuelve el simbolo de la carta.
@@ -85,8 +87,8 @@ void ImprimirEsquinas(int carta, int x, int y, int w, int h, Baraja & baraja, st
  */
 std::string DeterminarSimbolo(int carta, Baraja & baraja);
 //***************************************************************************************************************************************************************************************************************************************
-/** \brief Función que cambia el color en el que se imprimirá una carta basado en el palo.
- * \details Dependiendo de los datos de la carta en la estructura Carta la función devuelve el símbolo del palo correspondiente.
+/** \brief Funcin que cambia el color en el que se imprimir una carta basado en el palo.
+ * \details Dependiendo de los datos de la carta en la estructura Carta la funcin devuelve el smbolo del palo correspondiente.
  * \param carta int ID de la carta en el arreglo de la estructura Baraja
  * \param baraja Baraja& Estructura de la baraja
  * \return void Cambia el color en el que se imprime.
@@ -94,8 +96,8 @@ std::string DeterminarSimbolo(int carta, Baraja & baraja);
  */
 void DeterminarColor(int carta, Baraja & baraja);
 //***************************************************************************************************************************************************************************************************************************************
-/** \brief Función que determina el número o rango (en string) de una carta basado en el palo.
- * \details Dependiendo de los datos de la carta en la estructura Carta la función devuelve la letra de la carta o el numero de la carta que se tiene que imprimir (en string).
+/** \brief Funcin que determina el nmero o rango (en string) de una carta basado en el palo.
+ * \details Dependiendo de los datos de la carta en la estructura Carta la funcin devuelve la letra de la carta o el numero de la carta que se tiene que imprimir (en string).
  * \param carta int ID de la carta en el arreglo de la estructura Baraja
  * \param baraja Baraja& Estructura de la baraja
  * \return std::string Devuelve el rango de la carta.
@@ -104,26 +106,26 @@ void DeterminarColor(int carta, Baraja & baraja);
 std::string DeterminarRango(int carta, Baraja & baraja);
 //***************************************************************************************************************************************************************************************************************************************
 /** \brief Imprime los iconos del centro de una carta
- * \details Dependiendo del número (o rango) de la carta, imprime el patrón de simbolos del palo correspondiente en el centro de la carta.
+ * \details Dependiendo del nmero (o rango) de la carta, imprime el patrn de simbolos del palo correspondiente en el centro de la carta.
  * \param carta int ID de la carta en el arreglo de la estructura Baraja
- * \param x int Posición x donde se va a imprimir
- * \param y int Posición y donde se va a imprimir
+ * \param x int Posicin x donde se va a imprimir
+ * \param y int Posicin y donde se va a imprimir
  * \param w int Ancho de la carta
  * \param h int Altura de la carta
  * \param baraja Baraja& Estructura de la baraja
  * \param sibmolocarta std::string Simbolo correspondiente al palo de la carta
- * \param rango int Número correspondiente a la carta
+ * \param rango int Nmero correspondiente a la carta
  * \return void Imprime los simbolos en el centro de una carta
  *
  */
 void ImprimirCentro(int x, int y, int w, int h, std::string simbolo, int rango);
 //***************************************************************************************************************************************************************************************************************************************
 /** \brief Calcula la suma de un arreglo de cartas
- * \details Usa el arreglo de IDs de cartas para tomar el valor númerico de cada uno y calcular la puntuación de esa mano (también determina si el as vale 1 u 11).
+ * \details Usa el arreglo de IDs de cartas para tomar el valor nmerico de cada uno y calcular la puntuacin de esa mano (tambin determina si el as vale 1 u 11).
  * \param &cartas int* Arreglo de IDs de cartas
  * \param ncartas int Numero de cartas en el arreglo
  * \param baraja Baraja& Estructura de la baraja
- * \return int Puntuación de la mano
+ * \return int Puntuacin de la mano
  *
  */
 int CalcularSuma(int * & cartas, int ncartas, Baraja & baraja);
@@ -131,24 +133,24 @@ int CalcularSuma(int * & cartas, int ncartas, Baraja & baraja);
 /** \brief Maneja el resultado e imprime la pantalla de resultados correspondientes.
  * \details Utilizando r determina que resultado se debe de imprimir en pantalla.
  * \param r int Resultado.
- * \return int Decisión para saber i se va a volver a jugar o no.
+ * \return int Decisin para saber i se va a volver a jugar o no.
  *
  */
 int Resultados(int r);
 //***************************************************************************************************************************************************************************************************************************************
-/** \brief Función que simula el juego de la mano del Dealer.
- * \details Siguiendo las reglas del Blackjack se incrementa o planta la mano del Dealer y se devuelve la puntuación.
+/** \brief Funcin que simula el juego de la mano del Dealer.
+ * \details Siguiendo las reglas del Blackjack se incrementa o planta la mano del Dealer y se devuelve la puntuacin.
  * \param &barajaD int* Arreglo de la baraja del Dealer
  * \param ncartas int Numero de cartas en la baraja del Dealer
  * \param baraja Baraja& Estructura de la baraja
  * \param pull int Cantidad de cartas que se han jalado de la baraja.
- * \return int Devuelve la puntuación del Dealer
+ * \return int Devuelve la puntuacin del Dealer
  *
  */
 int JuegoDealer(int * & barajaD, int ncartas, Baraja & baraja, int pull);
 //***************************************************************************************************************************************************************************************************************************************
 enum {
-    CORAZON = 0, /**< Carta de corazón */
+    CORAZON = 0, /**< Carta de corazn */
         DIAMANTE, /**< Carta de diamante */
         TREBOL, /**< Carta de trebol */
         ESPADA /**< Carta de Espada */
@@ -161,13 +163,13 @@ enum {
 };
 //***************************************************************************************************************************************************************************************************************************************
 enum {
-    PEDIR = 0, /**< Desición del jugador para pedir una carta más */
-        PLANTAR /**< Desición del jugador para terminar su mano y plantarse */
+    PEDIR = 0, /**< Desicin del jugador para pedir una carta ms */
+        PLANTAR /**< Desicin del jugador para terminar su mano y plantarse */
 };
 //***************************************************************************************************************************************************************************************************************************************
 enum {
-    AGAIN = 0, /**< Desición del jugador para jugar de nuevo */
-        SALIRJ /**< Desición del jugador para dejar de jugar */
+    AGAIN = 0, /**< Desicin del jugador para jugar de nuevo */
+        SALIRJ /**< Desicin del jugador para dejar de jugar */
 };
 
 //***************************************************************************************************************************************************************************************************************************************

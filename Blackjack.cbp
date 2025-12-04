@@ -15,19 +15,28 @@
 					<Add option="-g" />
 				</Compiler>
 			</Target>
-			<Target title="Release">
-				<Option output="bin/Release/Blackjack" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release/" />
-				<Option type="1" />
-				<Option compiler="gcc" />
+                        <Target title="Release">
+                                <Option output="bin/Release/Blackjack" prefix_auto="1" extension_auto="1" />
+                                <Option object_output="obj/Release/" />
+                                <Option type="1" />
+                                <Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>
 				<Linker>
-					<Add option="-s" />
-				</Linker>
-			</Target>
-		</Build>
+                                <Add option="-s" />
+                                </Linker>
+                        </Target>
+                        <Target title="Tests">
+                                <Option output="bin/Tests/BlackjackTests" prefix_auto="1" extension_auto="1" />
+                                <Option object_output="obj/Tests/" />
+                                <Option type="1" />
+                                <Option compiler="gcc" />
+                                <Compiler>
+                                        <Add option="-std=c++17" />
+                                </Compiler>
+                        </Target>
+                </Build>
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
@@ -36,19 +45,45 @@
 			<Add option="-static-libstdc++" />
 			<Add option="-static-libgcc" />
 		</Linker>
-		<Unit filename="Cartas.cpp" />
-		<Unit filename="Cartas.h" />
-		<Unit filename="ColorConsola.h">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
-		<Unit filename="Menu.cpp" />
-		<Unit filename="Menu.h" />
-		<Unit filename="Titulos.cpp" />
-		<Unit filename="Titulos.h" />
-		<Unit filename="Utileria.cpp" />
-		<Unit filename="Utileria.h" />
-		<Unit filename="main.cpp" />
-		<Extensions>
+                <Unit filename="Cartas.cpp">
+                        <Option target="Debug;Release" />
+                </Unit>
+                <Unit filename="Cartas.h">
+                        <Option target="Debug;Release" />
+                </Unit>
+                <Unit filename="ColorConsola.h">
+                        <Option target="&lt;{~None~}&gt;" />
+                </Unit>
+                <Unit filename="GameLogic.cpp" />
+                <Unit filename="GameLogic.h" />
+                <Unit filename="Menu.cpp">
+                        <Option target="Debug;Release" />
+                </Unit>
+                <Unit filename="Menu.h">
+                        <Option target="Debug;Release" />
+                </Unit>
+                <Unit filename="Titulos.cpp">
+                        <Option target="Debug;Release" />
+                </Unit>
+                <Unit filename="Titulos.h">
+                        <Option target="Debug;Release" />
+                </Unit>
+                <Unit filename="Utileria.cpp">
+                        <Option target="Debug;Release" />
+                </Unit>
+                <Unit filename="Utileria.h">
+                        <Option target="Debug;Release" />
+                </Unit>
+                <Unit filename="main.cpp">
+                        <Option target="Debug;Release" />
+                </Unit>
+                <Unit filename="tests/catch.hpp">
+                        <Option target="&lt;{~None~}&gt;" />
+                </Unit>
+                <Unit filename="tests/test_logic.cpp">
+                        <Option target="Tests" />
+                </Unit>
+                <Extensions>
 			<DoxyBlocks>
 				<comment_style block="0" line="0" />
 				<doxyfile_project />

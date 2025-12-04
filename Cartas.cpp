@@ -4,13 +4,14 @@
 #include <unistd.h>
 #include <string>
 #include <time.h>
+#include <vector>
 #include <windows.h>
 
 #include "Utileria.h"
 #include "Cartas.h"
 #include "Titulos.h"
 #include "ColorConsola.h"
-#include "Titulos.h"
+#include "GameLogic.h"
 
 void Jugar() {
     //Posición del cursor para jugar de nuevo.
@@ -128,34 +129,30 @@ void Jugar() {
 
 //***************************************************************************************************************************************************************************************************************************************
 int JuegoDealer(int * & barajaD, int ncartas, Baraja & baraja, int pull) {
-    int x = 21, y = 1, i = 0;
-    int suma = CalcularSuma(barajaD, ncartas, baraja);
-    while (i <= 5) {
-        //El Dealer solo puede tomar cartas si su puntuación es menor o igual a 16 de lo contrario se tiene que plantar (limitado a 5 cartas).
-        if (suma <= 16) {
-            ImprimirCarta(x, 13, 13, 13, pull, baraja);
-            barajaD[y] = pull;
-            ncartas++;
-            y++;
-            pull++;
-            x += 17;
-            suma = CalcularSuma(barajaD, ncartas, baraja);
-            MoverCursor(4, 49);
-            std::cout << red << "Puntuaci\xA2n Dealer: " << suma;
-        } else {
-            MoverCursor(4, 49);
-            std::cout << red << "Puntuaci\xA2n Dealer: " << suma;
-            return suma;
-        }
-        i++;
+    std::vector<int> mano(barajaD, barajaD + ncartas);
+    DealerSimulationResult resultado = SimularJuegoDealer(mano, pull, baraja);
+    int x = 21;
+
+    for (int carta : resultado.drawnCards) {
+        ImprimirCarta(x, 13, 13, 13, carta, baraja);
+        barajaD[ncartas] = carta;
+        ncartas++;
+        x += 17;
+        int suma = CalcularSuma(barajaD, ncartas, baraja);
+        MoverCursor(4, 49);
+        std::cout << red << "Puntuaci\xA2n Dealer: " << suma;
         sleep(1);
     }
-    return suma;
+
+    MoverCursor(4, 49);
+    std::cout << red << "Puntuaci\xA2n Dealer: " << resultado.total;
+
+    return resultado.total;
 }
 
 //***************************************************************************************************************************************************************************************************************************************
 int Resultados(int r) {
-    int o = 0, pos;
+    int o = 0, pos = AGAIN;
     //Se imprimen los marcos de la pantalla de resultados.
 
     std::cout << white;
@@ -184,25 +181,16 @@ int Resultados(int r) {
     DibujarMarco(16, 2, -2 + ((60 - 11) + (220 - 120)) / 2, 34);
     while (o != ENTER) {
         o = getch();
-        switch (o) {
-        case RIGHT:
-            if (pos == SALIRJ) break;
-            else {
-                pos = SALIRJ;
+        int nuevo = ActualizarOpcionResultados(pos, o);
+        if (nuevo != pos) {
+            if (nuevo == SALIRJ) {
                 BorrarMarco(16, 2, -2 + ((60 - 11) + (220 - 120)) / 2, 34);
                 DibujarMarco(16, 2, 24 + ((220 - 120) + (120 - 5)) / 2, 34);
-                break;
+            } else {
+                BorrarMarco(16, 2, 24 + ((220 - 120) + (120 - 5)) / 2, 34);
+                DibujarMarco(16, 2, -2 + ((60 - 11) + (220 - 120)) / 2, 34);
             }
-            case LEFT:
-                if (pos == AGAIN) break;
-                else {
-                    pos = AGAIN;
-                    BorrarMarco(16, 2, 24 + ((220 - 120) + (120 - 5)) / 2, 34);
-                    DibujarMarco(16, 2, -2 + ((60 - 11) + (220 - 120)) / 2, 34);
-                    break;
-                }
-                default:
-                    break;
+            pos = nuevo;
         }
     }
     //   EstablecerColor(NEGRO,BLANCO);
@@ -210,30 +198,6 @@ int Resultados(int r) {
 }
 
 //***************************************************************************************************************************************************************************************************************************************
-int CalcularSuma(int * & cartas, int ncartas, Baraja & baraja) {
-    int suma = 0, nas = 0;
-    bool ace = false;
-    //Recorremos toda la baraja y contamos el numero de aces que hay mientras sumaoms la puntuación.
-    for (int i = 0; i < ncartas; i++) {
-        if (baraja.cartas[cartas[i]].numero == 1) {
-            suma += 11;
-            ace = true;
-            nas++;
-        } else if (baraja.cartas[cartas[i]].numero == 11 || baraja.cartas[cartas[i]].numero == 12 || baraja.cartas[cartas[i]].numero == 13)
-            suma += 10;
-        else suma += baraja.cartas[cartas[i]].numero;
-    }
-    //Si la suma es mayor a 21 y hay un as vamos reduciendo el valor del as a 1 (restandole 10 porque le quitaría 11 del as y le sumaría 1 del nuevo valor -11+1=-10).
-    if (suma > 21 && ace == true) {
-        for (int i = 0; i < nas; i++) {
-            if (suma > 21) {
-                suma -= 10;
-            }
-        }
-    }
-    return suma;
-}
-
 //***************************************************************************************************************************************************************************************************************************************
 void ImprimirCarta(int x, int y, int w, int h, int carta, Baraja & baraja) {
     //Determina el simbolo de la carta
@@ -405,35 +369,6 @@ void Creditos() {
     while (true) {
         o = getch();
         if (o == ENTER) break;
-    }
-}
-//***************************************************************************************************************************************************************************************************************************************
-void LlenarBaraja(Baraja & baraja) {
-    int j = 0;
-    //Hay 4 palos con 13 cartas cada uno, un for que va de 0 a 3 para los palos y un for que va de 1 a 13 para las cartas de cada palo.
-    for (int k = 0; k < 4; k++) {
-        for (int i = 1; i <= 13; i++) {
-            baraja.cartas[j].palo = k;
-            baraja.cartas[j].numero = i;
-            j++;
-        }
-    }
-}
-//***************************************************************************************************************************************************************************************************************************************
-void Shuffle(Baraja & baraja) {
-    //Ya que es una estructura no se tiene que procesar elemento por elemento.
-    int x, y, paloaux, numeroaux;
-    int i = rand() % 500 + 300;
-    //Para minimizar las posibilidades de que la baraja no quede muy revuelta se repiten los intercambios de 300 a 500 veces.
-    for (int j = 0; j < i; j++) {
-        x = rand() % 52;
-        y = rand() % 52;
-        paloaux = baraja.cartas[x].palo;
-        numeroaux = baraja.cartas[x].numero;
-        baraja.cartas[x].palo = baraja.cartas[y].palo;
-        baraja.cartas[x].numero = baraja.cartas[y].numero;
-        baraja.cartas[y].palo = paloaux;
-        baraja.cartas[y].numero = numeroaux;
     }
 }
 //***************************************************************************************************************************************************************************************************************************************
