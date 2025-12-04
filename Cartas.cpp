@@ -1,11 +1,8 @@
-#include <conio.h>
 #include <iostream>
 #include <cstdlib>
-#include <unistd.h>
 #include <string>
 #include <time.h>
 #include <vector>
-#include <windows.h>
 
 #include "Utileria.h"
 #include "Cartas.h"
@@ -19,7 +16,7 @@ void Jugar() {
     Baraja baraja;
     LlenarBaraja(baraja);
     do {
-        system("cls");
+        LimpiarPantalla();
         ImprimirTitulo((220 - 181) / 2, 0);
         int sumaD = 0, sumaJ = 0, x = 4, pos = PEDIR, cartasD = 0, cartasJ = 0, pull = 0, o = PEDIR;
         bool finished = false;
@@ -57,9 +54,9 @@ void Jugar() {
         sumaD = CalcularSuma(barajaD, cartasD, baraja);
 
         MoverCursor(4, 49);
-        std::cout << red << "Puntuaci\xA2n Dealer: " << sumaD;
+        std::cout << red << "Puntuación Dealer: " << sumaD;
         MoverCursor(4, 50);
-        std::cout << green << "Puntuaci\xA2n Jugador: " << sumaJ;
+        std::cout << green << "Puntuación Jugador: " << sumaJ;
 
         DibujarMarco(7, 2, 3, 54);
         //Si el jugador obtiene una carta de valor 10 y un as puede ganar por lo que confirmarmos si ha ganado o no.
@@ -72,7 +69,7 @@ void Jugar() {
         while (finished == false) {
             o = PEDIR;
             while (o != ENTER) {
-                o = getch();
+                o = LeerTecla();
                 switch (o) {
                 case RIGHT:
                     if (pos == PLANTAR) break;
@@ -101,7 +98,7 @@ void Jugar() {
                 cartasJ++;
                 sumaJ = CalcularSuma(barajaJ, cartasJ, baraja);
                 MoverCursor(4, 50);
-                std::cout << green << "Puntuaci\xA2n Jugador: " << sumaJ;
+                std::cout << green << "Puntuación Jugador: " << sumaJ;
                 //Revisamos todas las condiciones para los resultados
                 if (sumaJ > 21) {
                     posf = Resultados(PERDIO);
@@ -140,12 +137,12 @@ int JuegoDealer(int * & barajaD, int ncartas, Baraja & baraja, int pull) {
         x += 17;
         int suma = CalcularSuma(barajaD, ncartas, baraja);
         MoverCursor(4, 49);
-        std::cout << red << "Puntuaci\xA2n Dealer: " << suma;
-        sleep(1);
+        std::cout << red << "Puntuación Dealer: " << suma;
+        EsperarMilisegundos(1000);
     }
 
     MoverCursor(4, 49);
-    std::cout << red << "Puntuaci\xA2n Dealer: " << resultado.total;
+    std::cout << red << "Puntuación Dealer: " << resultado.total;
 
     return resultado.total;
 }
@@ -180,7 +177,7 @@ int Resultados(int r) {
     std::cout << "Regresar" << red << std::endl;
     DibujarMarco(16, 2, -2 + ((60 - 11) + (220 - 120)) / 2, 34);
     while (o != ENTER) {
-        o = getch();
+        o = LeerTecla();
         int nuevo = ActualizarOpcionResultados(pos, o);
         if (nuevo != pos) {
             if (nuevo == SALIRJ) {
@@ -210,12 +207,10 @@ void ImprimirCarta(int x, int y, int w, int h, int carta, Baraja & baraja) {
     std::cout << white;
     //Impresión del marco de la carta
     DibujarMarcoSolido(w + 2, h, x, y);
-    //Impresión de las gifuras de la esquina.
+    //Impresión de las figuras de la esquina.
     ImprimirEsquinas(carta, x, y, w + 2, h, baraja, simbolocarta, numerocarta);
     //Impresión del patron del centro.
     ImprimirCentro(x, y, w + 2, h, simbolocarta, numero);
-    //Devolvemos el output al original.
-    SetConsoleOutputCP(850);
 }
 
 //***************************************************************************************************************************************************************************************************************************************
@@ -311,24 +306,24 @@ void ImprimirCentro(int x, int y, int w, int h, std::string simbolocarta, int ra
 
 //***************************************************************************************************************************************************************************************************************************************
 void Instrucciones() {
-    system("cls");
+    LimpiarPantalla();
     ImprimirTitulo((220 - 181) / 2, 0);
     int o = 0;
     ImprimirReglas((220 - 45) / 2, 12);
     MoverCursor((220 - 75) / 2, 21);
-    std::cout << blue << char(254) << " El Dealer repartir\xA0 dos cartas descubiertas al jugador y una descubierta a s\xA1 mismo.";
+    std::cout << blue << char(254) << " El Dealer repartirá dos cartas descubiertas al jugador y una descubierta a sí mismo.";
     MoverCursor((220 - 78) / 2, 23);
-    std::cout << blue << char(254) << " El jugador decide si pide m\xA0s cartas o se planta con las dos que ya recibi\xA2";
+    std::cout << blue << char(254) << " El jugador decide si pide más cartas o se planta con las dos que ya recibió";
     MoverCursor((220 - 117) / 2, 25);
-    std::cout << blue << char(254) << " Al pedir una carta su valor se suma a la puntuaci\xA2n del jugador. Al plantarse, el jugador no podr\xA0 pedir m\xA0s cartas.";
+    std::cout << blue << char(254) << " Al pedir una carta su valor se suma a la puntuación del jugador. Al plantarse, el jugador no podrá pedir más cartas.";
     MoverCursor((220 - 139) / 2, 27);
-    std::cout << char(254) << " Las cartas del 2 al 10 valen su valor num\x82rico; las cartas J, Q y K valen 10 y el as vale 1 o 11 seg\xA3n la conveniencia del jugador.";
+    std::cout << char(254) << " Las cartas del 2 al 10 valen su valor numérico; las cartas J, Q y K valen 10 y el as vale 1 o 11 según la conveniencia del jugador.";
     MoverCursor((220 - 192) / 2, 29);
-    std::cout << char(254) << " Una vez terminada la mano del jugador el Dealer jugar\xA0 la suya. Los jugadores que se queden m\xA0s lejos de 21 que el Dealer o que hayan sobrepasado este valor, pierden.";
+    std::cout << char(254) << " Una vez terminada la mano del jugador el Dealer jugará la suya. Los jugadores que se queden más lejos de 21 que el Dealer o que hayan sobrepasado este valor, pierden.";
     MoverCursor((220 - 164) / 2, 31);
-    std::cout << char(254) << " El Dealer no tiene la posibilidad de tomar alguna decisi\xA2n sobre el juego. Si su puntuaci\xA2n es de 16 o menos tiene que pedir, si suma 17 o m\xA0s tiene que plantarse.";
+    std::cout << char(254) << " El Dealer no tiene la posibilidad de tomar alguna decisión sobre el juego. Si su puntuación es de 16 o menos tiene que pedir, si suma 17 o más tiene que plantarse.";
     MoverCursor((220 - 128) / 2, 33);
-    std::cout << char(254) << " Los jugadores que tengan 21 o esten m\xA0s cerca de 21 que el Dealer, ganan. Adem\xA0s, si el Dealer sobrepasa el 21, el jugador gana.";
+    std::cout << char(254) << " Los jugadores que tengan 21 o esten más cerca de 21 que el Dealer, ganan. Además, si el Dealer sobrepasa el 21, el jugador gana.";
     MoverCursor((220 - 77) / 2, 35);
     std::cout << char(254) << " Si el jugador toma 5 cartas y no sobrepasa o alcanza el 21, el jugador gana.";
     MoverCursor((220 - 61) / 2, 37);
@@ -337,45 +332,43 @@ void Instrucciones() {
     MoverCursor((220 - 81) / 2, 47);
     std::cout << blue << char(254) << " Para movimiento entre opciones se utilizan las flechas direccionales del teclado.";
     MoverCursor((220 - 145) / 2, 49);
-    std::cout << char(254) << " Para acceder a alguna opci\xA2n se utiliza la tecla <ENTER>. Algunas de las opciones son 'Pedir', 'Plantar', 'OK' y las opciones del men\xA3 principal." << red;
+    std::cout << char(254) << " Para acceder a alguna opción se utiliza la tecla <ENTER>. Algunas de las opciones son 'Pedir', 'Plantar', 'OK' y las opciones del menú principal." << red;
     DibujarMarco(7, 2, -3 + (220 - 2) / 2, 53);
     MoverCursor((220 - 2) / 2, 54);
     std::cout << green << "OK." << std::endl;
     while (true) {
-        o = getch();
+        o = LeerTecla();
         if (o == ENTER) break;
     }
 
 }
 //***************************************************************************************************************************************************************************************************************************************
 void Creditos() {
-    system("cls");
+    LimpiarPantalla();
     int o = 0;
-    system("cls");
+    LimpiarPantalla();
     ImprimirTitulo((220 - 181) / 2, 0);
     ImprimirCreditos((220 - 55) / 2, 12);
     MoverCursor((220 - 166) / 2, 24);
-    std::cout << blue << "Este programa fue hecho como proyecto final de la clase de Programaci\xA2n de Computadoras de la Universidad de Sonora a cargo de la maestra Irene Rodriguez Castillo";
+    std::cout << blue << "Este programa fue hecho como proyecto final de la clase de Programación de Computadoras de la Universidad de Sonora a cargo de la maestra Irene Rodriguez Castillo";
     ImprimirAutores((220 - 52) / 2, 28);
     MoverCursor((220 - 28) / 2, 39);
     std::cout << blue << char(254) << " Carlos Eduardo Gonzalez Ruiz";
     MoverCursor((220 - 25) / 2, 41);
-    std::cout << blue << char(254) << " Luis Mario Sainz Pe\xA4u\xA4uri";
+    std::cout << blue << char(254) << " Luis Mario Sainz Peñuñuri";
     MoverCursor((220 - 30) / 2, 43);
     std::cout << blue << char(254) << " Ezequiel Isaac Rodriguez Tenorio" << red;
     DibujarMarco(7, 2, -3 + (220 - 2) / 2, 47);
     MoverCursor((220 - 2) / 2, 48);
     std::cout << green << "OK." << std::endl;
     while (true) {
-        o = getch();
+        o = LeerTecla();
         if (o == ENTER) break;
     }
 }
 //***************************************************************************************************************************************************************************************************************************************
 void ImprimirEsquinas(int carta, int x, int y, int w, int h, Baraja & baraja, std::string simbolocarta, std::string numerocarta) {
     DeterminarColor(carta, baraja);
-    // Es necesario cambiar el output a UTF8 para poder imprimir las figuras sin tener que cambiar la fuente desde la consola.
-    SetConsoleOutputCP(CP_UTF8);
     MoverCursor(x + 1, y + 1);
     std::cout << numerocarta;
     MoverCursor(x + 1, y + 2);
@@ -431,19 +424,19 @@ std::string DeterminarRango(int carta, Baraja & baraja) {
 void ImprimirCartaVolteada(int x, int y, int w, int h) {
 
     MoverCursor(x, y);
-    std::cout << white << (char) ESI;
-    for (int n = 0; n < w; n++) std::cout << (char) BH;
-    std::cout << (char) ESD << std::endl;
+    std::cout << white << BOX_TOP_LEFT;
+    for (int n = 0; n < w; n++) std::cout << BOX_HORIZONTAL;
+    std::cout << BOX_TOP_RIGHT << std::endl;
     //Impresión del resto del marco menos la ultima linea
     for (int n = 0; n < h; n++) {
         MoverCursor(x, ++y);
-        std::cout << (char) BV;
-        for (int m = 0; m < w; m++) std::cout << (char) CV;
-        std::cout << (char) BV;
+        std::cout << BOX_VERTICAL;
+        for (int m = 0; m < w; m++) std::cout << CARD_BACK_FILL;
+        std::cout << BOX_VERTICAL;
     }
     //Movemos el cursor a ++y para imprimir la ultima linea del marco.
     MoverCursor(x, ++y);
-    std::cout << (char) EII;
-    for (int n = 0; n < w; n++) std::cout << (char) BH;
-    std::cout << (char) EID << std::endl;
+    std::cout << BOX_BOTTOM_LEFT;
+    for (int n = 0; n < w; n++) std::cout << BOX_HORIZONTAL;
+    std::cout << BOX_BOTTOM_RIGHT << std::endl;
 }
