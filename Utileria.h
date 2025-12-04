@@ -2,97 +2,62 @@
 #ifndef UTILERIA_H_INCLUDED
 #define UTILERIA_H_INCLUDED
 
-/** \brief Cambia la posici&acuteo;n del cursor.
- * \details Mueve el cursor a x, y para comenzar a imprimir desde ah&acutei;.
- * \param x Coordenada x a la que se va a mover
- * \param y Coordenada y a la que se va a mover
- * \return Mueve el cursor.
- *
- */
+#include <string>
+
+// Conjunto de caracteres Unicode que reemplazan los c√≥digos dependientes de p√°gina de c√≥digos.
+inline constexpr const char *BOX_VERTICAL = u8"‚îÇ";
+inline constexpr const char *BOX_HORIZONTAL = u8"‚îÄ";
+inline constexpr const char *BOX_TOP_RIGHT = u8"‚îê";
+inline constexpr const char *BOX_BOTTOM_LEFT = u8"‚îî";
+inline constexpr const char *BOX_BOTTOM_RIGHT = u8"‚îò";
+inline constexpr const char *BOX_TOP_LEFT = u8"‚îå";
+inline constexpr const char *CARD_BACK_FILL = u8"‚ñë";
+
+/** Cambia la posici√≥n del cursor. */
 void MoverCursor(short x, short y);
-//***************************************************************************************************************************************************************************************************************************************
-/** \brief Cambia la dimensi&acuteo;n de la ventana.
- * \details Cambia la dimensi&acuteo;n de la ventana a w ancho y h de alto.
- * \param w Ancho de la ventana
- * \param h Altura de la ventana
- * \return Cambia el tamaÒo de la ventana a w anchura y h altura.
- *
- */
+
+/** Ajusta la dimensi√≥n de la ventana si la plataforma lo permite. */
 void CambiarTamanio(int w, int h);
-//***************************************************************************************************************************************************************************************************************************************
-/** \brief Imprime un marco de w por h dimensiones en la posicion (x,y)
- * \details Imprime un cuadril&acutea;tero hueco utilizando caract&acutee;res ASCII de x por y dimensiones.
- * \param w El ancho del marco.
- * \param h La altura del marco.
- * \param x short PosiciÛn x para imprimir.
- * \param y short PosiciÛn y para imprimir.
- * \return Imprime el marco de w por h en la pantalla
- *
- */
+
+/** Imprime un marco hueco de w por h dimensiones en la posici√≥n (x,y). */
 void DibujarMarco(int w, int h, int x, int y);
-//***************************************************************************************************************************************************************************************************************************************
-/** \brief Elimina un marco de W x H dimensiones
- * \details Imprime caracteres en blanco de la misma manera en la que "DibujarMarco" dibuja un marco para "borrar" el marco de la pantalla.
- * \\param w El ancho del marco.
- * \param h La altura del marco.
- * \param x short PosiciÛn x para imprimir.
- * \param y short PosiciÛn y para imprimir.
- * \return void Elimina el marco de w x h dimensiones en la posiciÛn (x,y).
- *
- */
+
+/** Elimina un marco de W x H dimensiones. */
 void BorrarMarco(int w, int h, int x, int y);
-//***************************************************************************************************************************************************************************************************************************************
-/** \brief Crea un arreglo din·mico de tamaÒo dim
- * \details Crea y devuelve un arreglo unidimiensional creado en el heap.
- * \param dim int Dimension del arreglo
- * \return int* Arreglo creado
- *
- */
+
+/** Crea un arreglo din√°mico de tama√±o dim. */
 int * CrearArreglo(int dim);
-//***************************************************************************************************************************************************************************************************************************************
-/** \brief Elimina y limpia la memoria del Heap en la que se encuentra un arreglo
- * \details Utilizando la direcciÛn de un arreglo creado utilizando la funciÛn CrearArreglo elimina y libera el Heap de ese arreglo.
- * \param &ary int* Puntero del arreglo
- * \return Limpia el Heap
- *
- */
+
+/** Libera la memoria de un arreglo creado con CrearArreglo. */
 void DestruirArreglo(int * & ary);
-//***************************************************************************************************************************************************************************************************************************************
-enum {
-    BV = 179, /**< Barra vertical */
-        ESD = 191, /**< Esquina superior derecha de un marco */
-        EII, /**< Esquina inferior izquierda de un marco */
-        BH = 196, /**< Barra horizontal */
-        EID = 217, /**< Esquina inferior derecha de un marco */
-        ESI = 218, /**< Esquina superior izquierda de un marco */
-        CV = 176 /**< Relleno de las cartas volteadas */
-};
-//***************************************************************************************************************************************************************************************************************************************
+
 enum {
     ENTER = 13, /**< Valor capturado por getch() al presionar la tecla enter */
-        UP = 72, /**< Valor capturado por getch() al presionar la flecha direccional hacia arriba*/
-        DOWN = 80, /**< Valor capturado por getch() al presionar la flecha direccional hacia abajo*/
-        LEFT = 75, /**< Valor capturado por getch() al presionar la flecha direccional hacia la izquierda*/
-        RIGHT = 77 /**< Valor capturado por getch() al presionar la flecha direccional hacia la derecha*/
+    UP = 72, /**< Valor capturado por getch() al presionar la flecha direccional hacia arriba*/
+    DOWN = 80, /**< Valor capturado por getch() al presionar la flecha direccional hacia abajo*/
+    LEFT = 75, /**< Valor capturado por getch() al presionar la flecha direccional hacia la izquierda*/
+    RIGHT = 77 /**< Valor capturado por getch() al presionar la flecha direccional hacia la derecha*/
 };
-//***************************************************************************************************************************************************************************************************************************************
-/** \brief Esconde el cursor
- *
- * \param visible bool El valor que recibe para saber si aparecera el cursor
- * \return void no regresa nada
- *
- */
+
+/** Muestra u oculta el cursor. */
 void set_cursor(bool visible);
-//***************************************************************************************************************************************************************************************************************************************
-/** \brief Dibuja un marco que tiene un fondo para tapar las cartas.
- *
- * \param w int Cantidad de ancho del marco.
- * \param h int Cantidad de alto del marco.
- * \param x int Cantidad en x del marco.
- * \param y int Cantidad en y del marco.
- * \return void
- *
- */
+
+/** Dibuja un marco con relleno para tapar las cartas. */
 void DibujarMarcoSolido(int w, int h, int x, int y);
+
+/** Limpia la pantalla de la consola de forma multiplataforma. */
+void LimpiarPantalla();
+
+/** Ajusta el t√≠tulo de la consola. */
+void ActualizarTitulo(const std::string &titulo);
+
+/** Configura la salida en UTF-8 cuando la plataforma lo requiere. */
+void ConfigurarCodificacion();
+
+/** Espera la cantidad de milisegundos indicada sin bloquear la interfaz. */
+void EsperarMilisegundos(int milisegundos);
+
+/** Lee una tecla sin eco, con soporte para flechas en plataformas POSIX y Windows. */
+int LeerTecla();
 
 #endif // UTILERIA_H_INCLUDED

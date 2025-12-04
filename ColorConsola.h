@@ -3,71 +3,57 @@
 #define COLORCONSOLA_H_INCLUDED
 
 #include <iostream>
+
+#ifdef _WIN32
 #include <windows.h>
 
-/** \brief Esta funcion declara el color azul
- *
- * \param s std::ostream& Regresa la posicion de lo que esta en el flujo con el color editado
- * \return std::ostream&
- *
- */
-inline std::ostream & blue(std::ostream & s) //Esta funcion declara el color azul para ser utilizado en el stream
-{
+inline std::ostream &aplicar_color(std::ostream &s, WORD atributos) {
     HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hStdout, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+    SetConsoleTextAttribute(hStdout, atributos);
     return s;
 }
-//***************************************************************************************************************************************************************************************************************************************
-/** \brief Esta funcion declara el color rojo
- *
- * \param s std::ostream& Regresa la posicion de lo que esta en el flujo con el color editado
- * \return std::ostream&
- *
- */
-inline std::ostream & red(std::ostream & s) //Esta funcion declara el color rojo para ser utilizado en el stream
-{
-    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_INTENSITY);
-    return s;
+
+inline std::ostream &blue(std::ostream &s) {
+    return aplicar_color(s, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 }
-//***************************************************************************************************************************************************************************************************************************************
-/** \brief Esta funcion declara el color verde
- *
- * \param s std::ostream& Regresa la posicion de lo que esta en el flujo con el color editado
- * \return std::ostream&
- *
- */
-inline std::ostream & green(std::ostream & s) //Esta funcion declara el color verde para ser utilizado en el stream
-{
-    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-    return s;
+
+inline std::ostream &red(std::ostream &s) {
+    return aplicar_color(s, FOREGROUND_RED | FOREGROUND_INTENSITY);
 }
-//***************************************************************************************************************************************************************************************************************************************
-/** \brief Esta funcion declara el color amarillo
- *
- * \param s std::ostream& Regresa la posicion de lo que esta en el flujo con el color editado
- * \return std::ostream&
- *
- */
-inline std::ostream & yellow(std::ostream & s) //Esta funcion declara el color amarillo para ser utilizado en el stream
-{
-    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
-    return s;
+
+inline std::ostream &green(std::ostream &s) {
+    return aplicar_color(s, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 }
-//***************************************************************************************************************************************************************************************************************************************
-/** \brief Esta funcion declara el color blanco
- *
- * \param s std::ostream& Regresa la posicion de lo que esta en el flujo con el color editado
- * \return std::ostream&
- *
- */
-inline std::ostream & white(std::ostream & s) //Esta funcion declara el color blanco para ser utilizado en el stream
-{
-    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-    return s;
+
+inline std::ostream &yellow(std::ostream &s) {
+    return aplicar_color(s, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
 }
-//***************************************************************************************************************************************************************************************************************************************
+
+inline std::ostream &white(std::ostream &s) {
+    return aplicar_color(s, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+}
+#else
+constexpr const char *RESET = "\033[0m";
+
+inline std::ostream &blue(std::ostream &s) {
+    return s << "\033[36m"; // cian brillante
+}
+
+inline std::ostream &red(std::ostream &s) {
+    return s << "\033[31m";
+}
+
+inline std::ostream &green(std::ostream &s) {
+    return s << "\033[32m";
+}
+
+inline std::ostream &yellow(std::ostream &s) {
+    return s << "\033[33m";
+}
+
+inline std::ostream &white(std::ostream &s) {
+    return s << RESET;
+}
+#endif
+
 #endif // COLORCONSOLA_H_INCLUDED

@@ -1,5 +1,4 @@
 #include <iostream>
-#include <windows.h>
 #include <time.h>
 
 #include "Menu.h"
@@ -9,15 +8,17 @@
 using namespace std;
 
 int main() {
+    // Configurar la consola para usar UTF-8 y minimizar problemas de glifos.
+    ConfigurarCodificacion();
     //Escondemos el cursor para que no flashee en la pantalla principal.
     set_cursor(false);
     //Cambiamos el titulo de la consola.
-    system("title BlackJack");
+    ActualizarTitulo("BlackJack");
     //El seed para revolver la baraja.
     srand(time(NULL));
     while (true) {
-        system("cls");
-        //El menu devolverá la opción que eligió el usuario.
+        LimpiarPantalla();
+        //El menu devolver la opcion que eligi el usuario.
         int option = Menu();
         switch (option) {
         case JUGAR:
