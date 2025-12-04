@@ -464,7 +464,8 @@ std::string DeterminarSimbolo(int carta, Baraja & baraja) {
     case ESPADA:
         return "♠";
     }
-    return NULL;
+    std::cerr << "Palo inválido al determinar símbolo: " << baraja.cartas[carta].palo << std::endl;
+    return "";
 }
 //***************************************************************************************************************************************************************************************************************************************
 void DeterminarColor(int carta, Baraja & baraja) {
