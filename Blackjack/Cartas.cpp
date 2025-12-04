@@ -155,7 +155,7 @@ int JuegoDealer(int * & barajaD, int ncartas, Baraja & baraja, int pull) {
 
 //***************************************************************************************************************************************************************************************************************************************
 int Resultados(int r) {
-    int o = 0, pos;
+    int o = 0, pos = AGAIN;
     //Se imprimen los marcos de la pantalla de resultados.
 
     std::cout << white;
