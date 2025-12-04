@@ -2,72 +2,36 @@
 #ifndef COLORCONSOLA_H_INCLUDED
 #define COLORCONSOLA_H_INCLUDED
 
-#include <iostream>
-#include <windows.h>
+#include <ostream>
 
-/** \brief Esta funcion declara el color azul
- *
- * \param s std::ostream& Regresa la posicion de lo que esta en el flujo con el color editado
- * \return std::ostream&
- *
- */
-inline std::ostream & blue(std::ostream & s) //Esta funcion declara el color azul para ser utilizado en el stream
-{
-    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hStdout, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-    return s;
+#include "Console.h"
+
+inline std::ostream & apply_console_color(std::ostream & s, ConsoleColor color) {
+    return Console::instance().apply_color(s, color);
 }
-//***************************************************************************************************************************************************************************************************************************************
-/** \brief Esta funcion declara el color rojo
- *
- * \param s std::ostream& Regresa la posicion de lo que esta en el flujo con el color editado
- * \return std::ostream&
- *
- */
-inline std::ostream & red(std::ostream & s) //Esta funcion declara el color rojo para ser utilizado en el stream
-{
-    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_INTENSITY);
-    return s;
+
+inline std::ostream & blue(std::ostream & s) {
+    return apply_console_color(s, ConsoleColor::Blue);
 }
-//***************************************************************************************************************************************************************************************************************************************
-/** \brief Esta funcion declara el color verde
- *
- * \param s std::ostream& Regresa la posicion de lo que esta en el flujo con el color editado
- * \return std::ostream&
- *
- */
-inline std::ostream & green(std::ostream & s) //Esta funcion declara el color verde para ser utilizado en el stream
-{
-    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-    return s;
+
+inline std::ostream & red(std::ostream & s) {
+    return apply_console_color(s, ConsoleColor::Red);
 }
-//***************************************************************************************************************************************************************************************************************************************
-/** \brief Esta funcion declara el color amarillo
- *
- * \param s std::ostream& Regresa la posicion de lo que esta en el flujo con el color editado
- * \return std::ostream&
- *
- */
-inline std::ostream & yellow(std::ostream & s) //Esta funcion declara el color amarillo para ser utilizado en el stream
-{
-    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
-    return s;
+
+inline std::ostream & green(std::ostream & s) {
+    return apply_console_color(s, ConsoleColor::Green);
 }
-//***************************************************************************************************************************************************************************************************************************************
-/** \brief Esta funcion declara el color blanco
- *
- * \param s std::ostream& Regresa la posicion de lo que esta en el flujo con el color editado
- * \return std::ostream&
- *
- */
-inline std::ostream & white(std::ostream & s) //Esta funcion declara el color blanco para ser utilizado en el stream
-{
-    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-    return s;
+
+inline std::ostream & yellow(std::ostream & s) {
+    return apply_console_color(s, ConsoleColor::Yellow);
 }
-//***************************************************************************************************************************************************************************************************************************************
+
+inline std::ostream & white(std::ostream & s) {
+    return apply_console_color(s, ConsoleColor::White);
+}
+
+inline std::ostream & reset(std::ostream & s) {
+    return apply_console_color(s, ConsoleColor::Default);
+}
+
 #endif // COLORCONSOLA_H_INCLUDED

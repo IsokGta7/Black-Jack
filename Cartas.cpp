@@ -4,13 +4,19 @@
 #include <unistd.h>
 #include <string>
 #include <time.h>
-#include <windows.h>
 
 #include "Utileria.h"
 #include "Cartas.h"
 #include "Titulos.h"
 #include "ColorConsola.h"
 #include "Titulos.h"
+#include "Console.h"
+
+namespace {
+std::wstring Single(wchar_t ch) {
+    return std::wstring(1, ch);
+}
+}
 
 void Jugar() {
     //Posición del cursor para jugar de nuevo.
@@ -494,20 +500,25 @@ std::string DeterminarRango(int carta, Baraja & baraja) {
 //***************************************************************************************************************************************************************************************************************************************
 void ImprimirCartaVolteada(int x, int y, int w, int h) {
 
+    auto & console = Console::instance();
+
     MoverCursor(x, y);
-    std::cout << white << (char) ESI;
-    for (int n = 0; n < w; n++) std::cout << (char) BH;
-    std::cout << (char) ESD << std::endl;
+    std::cout << white;
+    console.write(Single(ESI));
+    for (int n = 0; n < w; n++) console.write(Single(BH));
+    console.write(Single(ESD));
+    std::cout << std::endl;
     //Impresión del resto del marco menos la ultima linea
     for (int n = 0; n < h; n++) {
         MoverCursor(x, ++y);
-        std::cout << (char) BV;
-        for (int m = 0; m < w; m++) std::cout << (char) CV;
-        std::cout << (char) BV;
+        console.write(Single(BV));
+        for (int m = 0; m < w; m++) console.write(Single(CV));
+        console.write(Single(BV));
     }
     //Movemos el cursor a ++y para imprimir la ultima linea del marco.
     MoverCursor(x, ++y);
-    std::cout << (char) EII;
-    for (int n = 0; n < w; n++) std::cout << (char) BH;
-    std::cout << (char) EID << std::endl;
+    console.write(Single(EII));
+    for (int n = 0; n < w; n++) console.write(Single(BH));
+    console.write(Single(EID));
+    std::cout << std::endl;
 }
