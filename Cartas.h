@@ -6,6 +6,9 @@
 
 #include "Utileria.h"
 
+struct GameSummary;
+struct GameMode;
+
 struct ElementoLayout {
     int x;
     int y;
@@ -168,7 +171,7 @@ int CalcularSuma(int * & cartas, int ncartas, Baraja & baraja);
  * \return int Decisin para saber i se va a volver a jugar o no.
  *
  */
-int Resultados(int r);
+int Resultados(const GameSummary &summary);
 //***************************************************************************************************************************************************************************************************************************************
 /** \brief Funcin que simula el juego de la mano del Dealer.
  * \details Siguiendo las reglas del Blackjack se incrementa o planta la mano del Dealer y se devuelve la puntuacin.
@@ -179,7 +182,7 @@ int Resultados(int r);
  * \return int Devuelve la puntuacin del Dealer
  *
  */
-int JuegoDealer(int * & barajaD, int ncartas, Baraja & baraja, int pull);
+int JuegoDealer(int * &barajaD, int ncartas, Baraja &baraja, int pull, const GameMode &modo);
 //***************************************************************************************************************************************************************************************************************************************
 enum {
     CORAZON = 0, /**< Carta de corazn */
