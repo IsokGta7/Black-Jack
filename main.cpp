@@ -4,6 +4,7 @@
 #include "Menu.h"
 #include "Utileria.h"
 #include "Cartas.h"
+#include "Console.h"
 
 using namespace std;
 

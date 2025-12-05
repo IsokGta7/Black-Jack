@@ -423,6 +423,8 @@ std::string DeterminarRango(int carta, Baraja & baraja) {
 //***************************************************************************************************************************************************************************************************************************************
 void ImprimirCartaVolteada(int x, int y, int w, int h) {
 
+    auto & console = Console::instance();
+
     MoverCursor(x, y);
     std::cout << white << BOX_TOP_LEFT;
     for (int n = 0; n < w; n++) std::cout << BOX_HORIZONTAL;
