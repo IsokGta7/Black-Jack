@@ -27,6 +27,51 @@ ElementoLayout CrearElemento(int x, int y, int width, int height, const Terminal
     return {ClampToScreen(x, tamano.width, finalWidth), ClampToScreen(y, tamano.height, finalHeight), finalWidth, finalHeight};
 }
 
+void DibujarMarcoCartaDecorado(int w, int h, int x, int y) {
+    MoverCursor(x, y);
+    std::cout << BOX_DOUBLE_TOP_LEFT;
+    for (int n = 0; n < w; n++) std::cout << BOX_DOUBLE_HORIZONTAL;
+    std::cout << BOX_DOUBLE_TOP_RIGHT << std::endl;
+
+    for (int n = 0; n < h; n++) {
+        MoverCursor(x, y + n + 1);
+        std::cout << BOX_DOUBLE_VERTICAL;
+#ifndef _WIN32
+        int color = 255 - (n % 4) * 5;
+        std::cout << "\033[48;5;" << color << "m";
+        for (int m = 0; m < w; m++) std::cout << " ";
+        std::cout << RESET;
+#else
+        const char *relleno = (n % 2 == 0) ? u8"░" : " ";
+        for (int m = 0; m < w; m++) std::cout << relleno;
+#endif
+        std::cout << BOX_DOUBLE_VERTICAL;
+    }
+
+    MoverCursor(x, y + h + 1);
+    std::cout << BOX_DOUBLE_BOTTOM_LEFT;
+    for (int n = 0; n < w; n++) std::cout << BOX_DOUBLE_HORIZONTAL;
+    std::cout << BOX_DOUBLE_BOTTOM_RIGHT << std::endl;
+}
+
+void IluminarCentroCarta(int x, int y, int w, int h) {
+#ifndef _WIN32
+    for (int fila = 2; fila < h; fila += 3) {
+        MoverCursor(x + 1, y + fila);
+        int color = 252 - (fila % 4);
+        std::cout << "\033[48;5;" << color << "m";
+        for (int col = 0; col < w; ++col) std::cout << " ";
+        std::cout << RESET;
+    }
+#else
+    for (int fila = 2; fila < h; fila += 3) {
+        MoverCursor(x + 1, y + fila);
+        const char *relleno = (fila % 2 == 0) ? u8"·" : " ";
+        for (int col = 0; col < w; ++col) std::cout << relleno;
+    }
+#endif
+}
+
 }
 
 JuegoLayout CalcularLayoutJuego(const TerminalSize &tamano) {
@@ -266,17 +311,20 @@ void ImprimirCarta(int x, int y, int w, int h, int carta, Baraja & baraja) {
     // Para imprimir el patrón del centro de la carta es necesario tener el valor numerico en numero (y no en string) por lo que lo determinamos aquí.
     if (numerocarta == "A" || numerocarta == "J" || numerocarta == "K" || numerocarta == "A" || numerocarta == "Q") numero = 1;
     else numero = std::stoi(numerocarta);
+    const int anchoMarco = w + 2;
+    AnimarAparicionRectangular(x, y, anchoMarco + 2, h + 2);
     std::cout << white;
     //Impresión del marco de la carta
-    DibujarMarcoSolido(w + 2, h, x, y);
+    DibujarMarcoCartaDecorado(anchoMarco, h, x, y);
     //Impresión de las figuras de la esquina.
-    ImprimirEsquinas(carta, x, y, w + 2, h, baraja, simbolocarta, numerocarta);
+    ImprimirEsquinas(carta, x, y, anchoMarco, h, baraja, simbolocarta, numerocarta);
     //Impresión del patron del centro.
-    ImprimirCentro(x, y, w + 2, h, simbolocarta, numero);
+    ImprimirCentro(x, y, anchoMarco, h, simbolocarta, numero);
 }
 
 //***************************************************************************************************************************************************************************************************************************************
 void ImprimirCentro(int x, int y, int w, int h, std::string simbolocarta, int rango) {
+    IluminarCentroCarta(x, y, w, h);
 
     switch (rango) {
     case 2:
@@ -386,6 +434,8 @@ void Instrucciones() {
         "Si el jugador toma 5 cartas y no sobrepasa o alcanza el 21, el jugador gana.",
         "Si ambos tienen el mismo valor el juego termina en un empate."
     };
+
+    lineas.emplace_back("Si tu consola es lenta puedes desactivar las animaciones con BJ_ANIMATIONS=off o BJ_DISABLE_ANIMATIONS=1 antes de ejecutar el juego.");
 
     int y = ClampToScreen(layout.reglas.y + 9, tamano.height);
     for (const auto &linea : lineas) {

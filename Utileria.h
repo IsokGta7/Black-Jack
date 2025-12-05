@@ -9,6 +9,11 @@ struct TerminalSize {
     int height;
 };
 
+struct AnimacionConfig {
+    bool habilitada;
+    int retardoPasoMs;
+};
+
 // Conjunto de caracteres Unicode que reemplazan los códigos dependientes de página de códigos.
 inline constexpr const char *BOX_VERTICAL = u8"│";
 inline constexpr const char *BOX_HORIZONTAL = u8"─";
@@ -16,6 +21,12 @@ inline constexpr const char *BOX_TOP_RIGHT = u8"┐";
 inline constexpr const char *BOX_BOTTOM_LEFT = u8"└";
 inline constexpr const char *BOX_BOTTOM_RIGHT = u8"┘";
 inline constexpr const char *BOX_TOP_LEFT = u8"┌";
+inline constexpr const char *BOX_DOUBLE_VERTICAL = u8"║";
+inline constexpr const char *BOX_DOUBLE_HORIZONTAL = u8"═";
+inline constexpr const char *BOX_DOUBLE_TOP_RIGHT = u8"╗";
+inline constexpr const char *BOX_DOUBLE_BOTTOM_LEFT = u8"╚";
+inline constexpr const char *BOX_DOUBLE_BOTTOM_RIGHT = u8"╝";
+inline constexpr const char *BOX_DOUBLE_TOP_LEFT = u8"╔";
 inline constexpr const char *CARD_BACK_FILL = u8"░";
 
 /** Cambia la posición del cursor. */
@@ -67,6 +78,18 @@ void set_cursor(bool visible);
 
 /** Dibuja un marco con relleno para tapar las cartas. */
 void DibujarMarcoSolido(int w, int h, int x, int y);
+
+/** Imprime una animación de aparición vertical con sombreado suave. */
+void AnimarAparicionRectangular(int x, int y, int w, int h);
+
+/** Configura la animación global desde variables de entorno. */
+void ConfigurarAnimacionesDesdeEntorno();
+
+/** Activa o desactiva la animación durante la ejecución. */
+void EstablecerAnimacionesHabilitadas(bool habilitar);
+
+/** Devuelve la configuración actual de animación. */
+AnimacionConfig ObtenerConfiguracionAnimacion();
 
 /** Limpia la pantalla de la consola de forma multiplataforma. */
 void LimpiarPantalla();
