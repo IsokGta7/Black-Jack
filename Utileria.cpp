@@ -159,7 +159,15 @@ void EsperarMilisegundos(int milisegundos) {
 
 int LeerTecla() {
 #ifdef _WIN32
-    return _getch();
+    int ch = _getch();
+    if (ch == 0 || ch == 224) {
+        int codigoExtendido = _getch();
+        return TraducirCodigoExtendidoWindows(ch, codigoExtendido);
+    }
+    if (ch == '\r') {
+        return ENTER;
+    }
+    return ch;
 #else
     termios oldt{};
     if (tcgetattr(STDIN_FILENO, &oldt) != 0) {

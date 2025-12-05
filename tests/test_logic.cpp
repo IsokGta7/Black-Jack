@@ -6,6 +6,7 @@
 
 #include "GameLogic.h"
 #include "Menu.h"
+#include "Utileria.h"
 
 TEST_CASE("CalcularSuma handles ace high and low") {
     Baraja baraja;
@@ -79,6 +80,16 @@ TEST_CASE("Navegacin del men envuelve arriba y abajo") {
     opcion = ActualizarOpcionMenu(opcion, DOWN);
     REQUIRE(opcion == INSTRUCCIONES);
 }
+
+#ifdef _WIN32
+TEST_CASE("Códigos extendidos de _getch se traducen a constantes internas") {
+    REQUIRE(TraducirCodigoExtendidoWindows(224, 72) == UP);
+    REQUIRE(TraducirCodigoExtendidoWindows(224, 80) == DOWN);
+    REQUIRE(TraducirCodigoExtendidoWindows(224, 75) == LEFT);
+    REQUIRE(TraducirCodigoExtendidoWindows(224, 77) == RIGHT);
+    REQUIRE(TraducirCodigoExtendidoWindows(0, ENTER) == ENTER);
+}
+#endif
 
 TEST_CASE("Navegacin de resultados cambia izquierda/derecha") {
     int opcion = AGAIN;

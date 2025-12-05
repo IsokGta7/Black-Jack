@@ -39,6 +39,24 @@ enum {
     RIGHT = 77 /**< Valor capturado por getch() al presionar la flecha direccional hacia la derecha*/
 };
 
+#ifdef _WIN32
+/** Traduce el código extendido de _getch() a los valores internos usados en el juego. */
+inline int TraducirCodigoExtendidoWindows(int /*prefijo*/, int codigoTecla) {
+    switch (codigoTecla) {
+    case 72:
+        return UP;
+    case 80:
+        return DOWN;
+    case 75:
+        return LEFT;
+    case 77:
+        return RIGHT;
+    default:
+        return codigoTecla;
+    }
+}
+#endif
+
 /** Muestra u oculta el cursor. */
 void set_cursor(bool visible);
 
