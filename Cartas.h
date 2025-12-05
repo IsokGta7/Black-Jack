@@ -4,6 +4,38 @@
 
 #include <string>
 
+#include "Utileria.h"
+
+struct ElementoLayout {
+    int x;
+    int y;
+    int width;
+    int height;
+};
+
+struct JuegoLayout {
+    ElementoLayout titulo;
+};
+
+struct InstruccionesLayout {
+    ElementoLayout titulo;
+    ElementoLayout reglas;
+    ElementoLayout okMarco;
+    ElementoLayout okTexto;
+};
+
+struct ResultadosLayout {
+    ElementoLayout marcoSolido;
+    ElementoLayout marcoHueco;
+    ElementoLayout tituloPerdio;
+    ElementoLayout tituloGano;
+    ElementoLayout tituloEmpate;
+    ElementoLayout volver;
+    ElementoLayout regresar;
+    ElementoLayout marcoVolver;
+    ElementoLayout marcoRegresar;
+};
+
 struct Carta {
     int palo; /**< El palo de la carta */
     int numero; /**< El nmero de la carta */
@@ -181,5 +213,9 @@ enum {
  *
  */
 void ImprimirCartaVolteada(int x, int y, int w, int h);
+
+JuegoLayout CalcularLayoutJuego(const TerminalSize &tamano);
+InstruccionesLayout CalcularLayoutInstrucciones(const TerminalSize &tamano);
+ResultadosLayout CalcularLayoutResultados(const TerminalSize &tamano);
 
 #endif // CARTAS_H_INCLUDED

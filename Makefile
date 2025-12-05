@@ -5,7 +5,7 @@ GAME_SOURCES := main.cpp Cartas.cpp GameLogic.cpp Menu.cpp Titulos.cpp Utileria.
 GAME_BINARY := bin/Blackjack
 
 TEST_BINARY := bin/tests/BlackjackTests
-TEST_SOURCES := GameLogic.cpp tests/test_logic.cpp
+TEST_SOURCES := Cartas.cpp GameLogic.cpp Menu.cpp Titulos.cpp Utileria.cpp tests/test_logic.cpp tests/test_layout.cpp
 
 all: $(GAME_BINARY)
 

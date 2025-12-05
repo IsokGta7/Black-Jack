@@ -17,6 +17,7 @@
 #include <cstdlib>
 #include <termios.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
 #endif
 
 #include "ColorConsola.h"
@@ -207,4 +208,37 @@ int LeerTecla() {
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
     return ch;
 #endif
+}
+
+TerminalSize ObtenerTamanoTerminal() {
+#ifdef _WIN32
+    CONSOLE_SCREEN_BUFFER_INFO csbi{};
+    if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
+        int width = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+        int height = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+        return {width, height};
+    }
+    return {220, 60};
+#else
+    winsize w{};
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == 0 && w.ws_col > 0 && w.ws_row > 0) {
+        return {static_cast<int>(w.ws_col), static_cast<int>(w.ws_row)};
+    }
+    const char *envCols = std::getenv("COLUMNS");
+    const char *envRows = std::getenv("LINES");
+    if (envCols && envRows) {
+        try {
+            return {std::stoi(envCols), std::stoi(envRows)};
+        } catch (const std::exception &) {
+        }
+    }
+    return {220, 60};
+#endif
+}
+
+int CentrarEnDimension(int dimensionTotal, int dimensionContenido) {
+    if (dimensionContenido >= dimensionTotal) {
+        return 0;
+    }
+    return (dimensionTotal - dimensionContenido) / 2;
 }
