@@ -54,6 +54,7 @@ cd Black-Jack
 - La interfaz ahora utiliza glifos Unicode (bordes y palos) y fuerza la salida a UTF-8 en Windows para evitar símbolos incorrectos en Windows 10/11.
 - El tamaño de ventana sólo se ajusta automáticamente en Windows; en otros sistemas el juego se centra mediante códigos ANSI sin cambiar la resolución.
 - Si ves artefactos, valida que la terminal use UTF-8 y que las fuentes incluyan caracteres de caja y naipes.
+- Las animaciones de revelado se pueden desactivar exportando `BJ_ANIMATIONS=off` o `BJ_DISABLE_ANIMATIONS=1` antes de ejecutar el binario, útil en consolas lentas.
 
 ## 🔧 Solución de Problemas
 

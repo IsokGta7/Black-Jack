@@ -1,12 +1,16 @@
 #include "Utileria.h"
 
+#include <algorithm>
 #include <chrono>
 #include <cstdio>
+#include <cstdlib>
 #include <exception>
 #include <iostream>
 #include <stdexcept>
 #include <string>
 #include <thread>
+#include <cctype>
+#include <iterator>
 
 #ifdef _WIN32
 #include <conio.h>
@@ -21,6 +25,19 @@
 #endif
 
 #include "ColorConsola.h"
+
+namespace {
+
+AnimacionConfig g_animConfig{true, 12};
+
+bool EsValorDesactivado(const std::string &valor) {
+    std::string lower;
+    lower.reserve(valor.size());
+    std::transform(valor.begin(), valor.end(), std::back_inserter(lower), [](unsigned char ch) { return static_cast<char>(std::tolower(ch)); });
+    return lower == "0" || lower == "off" || lower == "false" || lower == "none";
+}
+
+} // namespace
 
 void MoverCursor(short x, short y) {
 #ifdef _WIN32
@@ -152,6 +169,51 @@ void ConfigurarCodificacion() {
     _setmode(_fileno(stdout), _O_U8TEXT);
     _setmode(_fileno(stdin), _O_U8TEXT);
 #endif
+}
+
+AnimacionConfig ObtenerConfiguracionAnimacion() {
+    return g_animConfig;
+}
+
+void EstablecerAnimacionesHabilitadas(bool habilitar) {
+    g_animConfig.habilitada = habilitar;
+}
+
+void ConfigurarAnimacionesDesdeEntorno() {
+    const char *envAnim = std::getenv("BJ_ANIMATIONS");
+    if (envAnim && EsValorDesactivado(envAnim)) {
+        g_animConfig.habilitada = false;
+    }
+    if (std::getenv("BJ_DISABLE_ANIMATIONS")) {
+        g_animConfig.habilitada = false;
+    }
+
+    const char *envDelay = std::getenv("BJ_ANIMATION_DELAY_MS");
+    if (envDelay) {
+        try {
+            g_animConfig.retardoPasoMs = std::max(1, std::stoi(envDelay));
+        } catch (const std::exception &) {
+        }
+    }
+}
+
+void AnimarAparicionRectangular(int x, int y, int w, int h) {
+    if (!g_animConfig.habilitada) return;
+
+    const char *rellenos[] = {u8"░", u8"▒", u8"▓"};
+    for (int fila = 0; fila < h; ++fila) {
+        MoverCursor(x, y + fila);
+#ifndef _WIN32
+        int color = 255 - (fila % 4) * 3;
+        std::cout << "\033[48;5;" << color << "m";
+#endif
+        const char *relleno = rellenos[fila % 3];
+        for (int col = 0; col < w; ++col) std::cout << relleno;
+#ifndef _WIN32
+        std::cout << RESET;
+#endif
+        EsperarMilisegundos(g_animConfig.retardoPasoMs);
+    }
 }
 
 void EsperarMilisegundos(int milisegundos) {

@@ -10,6 +10,7 @@ using namespace std;
 int main() {
     // Configurar la consola para usar UTF-8 y minimizar problemas de glifos.
     ConfigurarCodificacion();
+    ConfigurarAnimacionesDesdeEntorno();
     //Escondemos el cursor para que no flashee en la pantalla principal.
     set_cursor(false);
     //Cambiamos el titulo de la consola.
