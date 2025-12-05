@@ -4,6 +4,11 @@
 
 #include <string>
 
+struct TerminalSize {
+    int width;
+    int height;
+};
+
 // Conjunto de caracteres Unicode que reemplazan los códigos dependientes de página de códigos.
 inline constexpr const char *BOX_VERTICAL = u8"│";
 inline constexpr const char *BOX_HORIZONTAL = u8"─";
@@ -77,5 +82,11 @@ void EsperarMilisegundos(int milisegundos);
 
 /** Lee una tecla sin eco, con soporte para flechas en plataformas POSIX y Windows. */
 int LeerTecla();
+
+/** Obtiene el tamaño visible actual de la terminal. */
+TerminalSize ObtenerTamanoTerminal();
+
+/** Calcula una posición centrada para un elemento del ancho indicado. */
+int CentrarEnDimension(int dimensionTotal, int dimensionContenido);
 
 #endif // UTILERIA_H_INCLUDED

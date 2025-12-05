@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <cstdlib>
 #include <string>
@@ -10,6 +11,62 @@
 #include "ColorConsola.h"
 #include "GameLogic.h"
 
+namespace {
+
+int ClampToScreen(int value, int limit, int span = 1) {
+    if (limit <= 0) return 0;
+    if (span >= limit) return 0;
+    if (value < 0) return 0;
+    if (value + span > limit) return limit - span;
+    return value;
+}
+
+ElementoLayout CrearElemento(int x, int y, int width, int height, const TerminalSize &tamano) {
+    int finalWidth = std::min(width, std::max(1, tamano.width));
+    int finalHeight = std::min(height, std::max(1, tamano.height));
+    return {ClampToScreen(x, tamano.width, finalWidth), ClampToScreen(y, tamano.height, finalHeight), finalWidth, finalHeight};
+}
+
+}
+
+JuegoLayout CalcularLayoutJuego(const TerminalSize &tamano) {
+    const int tituloWidth = 181;
+    JuegoLayout layout{};
+    layout.titulo = CrearElemento(CentrarEnDimension(tamano.width, tituloWidth), 0, tituloWidth, 1, tamano);
+    return layout;
+}
+
+InstruccionesLayout CalcularLayoutInstrucciones(const TerminalSize &tamano) {
+    InstruccionesLayout layout{};
+    layout.titulo = CrearElemento(CentrarEnDimension(tamano.width, 181), 0, 181, 1, tamano);
+    layout.reglas = CrearElemento(CentrarEnDimension(tamano.width, 45), ClampToScreen(12, tamano.height), 45, 6, tamano);
+    layout.okMarco = CrearElemento(CentrarEnDimension(tamano.width, 7) - 3, ClampToScreen(53, tamano.height), 7, 2, tamano);
+    layout.okTexto = CrearElemento(CentrarEnDimension(tamano.width, 2), ClampToScreen(54, tamano.height), 2, 1, tamano);
+    return layout;
+}
+
+ResultadosLayout CalcularLayoutResultados(const TerminalSize &tamano) {
+    ResultadosLayout layout{};
+    int anchoMarco = std::min(120, std::max(20, tamano.width - 2));
+    int altoMarco = std::min(20, std::max(6, tamano.height - 2));
+    int altoMarcoHueco = std::min(21, std::max(6, tamano.height - 1));
+    layout.marcoSolido = CrearElemento(CentrarEnDimension(tamano.width, anchoMarco), CentrarEnDimension(tamano.height, altoMarco), anchoMarco, altoMarco, tamano);
+    layout.marcoHueco = CrearElemento(layout.marcoSolido.x, CentrarEnDimension(tamano.height, altoMarcoHueco), anchoMarco, altoMarcoHueco, tamano);
+
+    const int tituloY = ClampToScreen(layout.marcoSolido.y + 1, tamano.height);
+    layout.tituloPerdio = CrearElemento(layout.marcoSolido.x + 1 + CentrarEnDimension(layout.marcoSolido.width, 107), tituloY, 107, 1, tamano);
+    layout.tituloGano = CrearElemento(layout.marcoSolido.x + 1 + CentrarEnDimension(layout.marcoSolido.width, 92), tituloY, 92, 1, tamano);
+    layout.tituloEmpate = CrearElemento(layout.marcoSolido.x + 1 + CentrarEnDimension(layout.marcoSolido.width, 63), tituloY, 63, 1, tamano);
+
+    const int opcionesY = ClampToScreen(layout.marcoSolido.y + layout.marcoSolido.height - 4, tamano.height);
+    const int anchoMarcoOpcion = 16;
+    layout.volver = CrearElemento(layout.marcoSolido.x + CentrarEnDimension(layout.marcoSolido.width / 2, 14), opcionesY, 14, 1, tamano);
+    layout.regresar = CrearElemento(layout.marcoSolido.x + layout.marcoSolido.width / 2 + CentrarEnDimension(layout.marcoSolido.width / 2, 8), opcionesY, 8, 1, tamano);
+    layout.marcoVolver = CrearElemento(layout.volver.x - 2, opcionesY - 2, anchoMarcoOpcion, 2, tamano);
+    layout.marcoRegresar = CrearElemento(layout.regresar.x - 2, opcionesY - 2, anchoMarcoOpcion, 2, tamano);
+    return layout;
+}
+
 void Jugar() {
     //Posición del cursor para jugar de nuevo.
     int posf = AGAIN;
@@ -17,7 +74,9 @@ void Jugar() {
     LlenarBaraja(baraja);
     do {
         LimpiarPantalla();
-        ImprimirTitulo((220 - 181) / 2, 0);
+        TerminalSize tamano = ObtenerTamanoTerminal();
+        JuegoLayout layout = CalcularLayoutJuego(tamano);
+        ImprimirTitulo(layout.titulo.x, layout.titulo.y);
         int sumaD = 0, sumaJ = 0, x = 4, pos = PEDIR, cartasD = 0, cartasJ = 0, pull = 0, o = PEDIR;
         bool finished = false;
         Shuffle(baraja);
@@ -154,38 +213,41 @@ int Resultados(int r) {
 
     std::cout << white;
 
-    DibujarMarcoSolido(120, 20, (220 - 120) / 2, (60 - 20) / 2);
+    TerminalSize tamano = ObtenerTamanoTerminal();
+    ResultadosLayout layout = CalcularLayoutResultados(tamano);
 
-    DibujarMarco(120, 21, (220 - 120) / 2, (60 - 21) / 2);
+    DibujarMarcoSolido(layout.marcoSolido.width, layout.marcoSolido.height, layout.marcoSolido.x, layout.marcoSolido.y);
+
+    DibujarMarco(layout.marcoHueco.width, layout.marcoHueco.height, layout.marcoHueco.x, layout.marcoHueco.y);
 
     //Dependiendo del resultado imprimimos un titulo.
     switch (r) {
     case PERDIO:
-        ImprimirPerder(1 + ((220 - 120) + (120 - 107)) / 2, (60 - 20) / 2 + 1);
+        ImprimirPerder(layout.tituloPerdio.x, layout.tituloPerdio.y);
         break;
     case GANO:
-        ImprimirGanar(1 + ((220 - 120) + (120 - 92)) / 2, (60 - 20) / 2 + 1);
+        ImprimirGanar(layout.tituloGano.x, layout.tituloGano.y);
         break;
     case EMPATE:
-        ImprimirEmpate(1 + ((220 - 120) + (120 - 63)) / 2, (60 - 20) / 2 + 1);
+        ImprimirEmpate(layout.tituloEmpate.x, layout.tituloEmpate.y);
         break;
     }
     //Se pregunta si se desea jugar de nuevo o no.
-    MoverCursor(((60 - 11) + (220 - 120)) / 2, 36);
+    MoverCursor(layout.volver.x, layout.volver.y);
     std::cout << yellow << "Volver a jugar" << std::endl;
-    MoverCursor(30 + ((220 - 120) + (120 - 5)) / 2, 36);
+    MoverCursor(layout.regresar.x, layout.regresar.y);
     std::cout << "Regresar" << red << std::endl;
-    DibujarMarco(16, 2, -2 + ((60 - 11) + (220 - 120)) / 2, 34);
+    DibujarMarco(layout.marcoVolver.width, layout.marcoVolver.height, layout.marcoVolver.x, layout.marcoVolver.y);
     while (o != ENTER) {
         o = LeerTecla();
         int nuevo = ActualizarOpcionResultados(pos, o);
         if (nuevo != pos) {
             if (nuevo == SALIRJ) {
-                BorrarMarco(16, 2, -2 + ((60 - 11) + (220 - 120)) / 2, 34);
-                DibujarMarco(16, 2, 24 + ((220 - 120) + (120 - 5)) / 2, 34);
+                BorrarMarco(layout.marcoVolver.width, layout.marcoVolver.height, layout.marcoVolver.x, layout.marcoVolver.y);
+                DibujarMarco(layout.marcoRegresar.width, layout.marcoRegresar.height, layout.marcoRegresar.x, layout.marcoRegresar.y);
             } else {
-                BorrarMarco(16, 2, 24 + ((220 - 120) + (120 - 5)) / 2, 34);
-                DibujarMarco(16, 2, -2 + ((60 - 11) + (220 - 120)) / 2, 34);
+                BorrarMarco(layout.marcoRegresar.width, layout.marcoRegresar.height, layout.marcoRegresar.x, layout.marcoRegresar.y);
+                DibujarMarco(layout.marcoVolver.width, layout.marcoVolver.height, layout.marcoVolver.x, layout.marcoVolver.y);
             }
             pos = nuevo;
         }
@@ -307,34 +369,44 @@ void ImprimirCentro(int x, int y, int w, int h, std::string simbolocarta, int ra
 //***************************************************************************************************************************************************************************************************************************************
 void Instrucciones() {
     LimpiarPantalla();
-    ImprimirTitulo((220 - 181) / 2, 0);
+    TerminalSize tamano = ObtenerTamanoTerminal();
+    InstruccionesLayout layout = CalcularLayoutInstrucciones(tamano);
+    ImprimirTitulo(layout.titulo.x, layout.titulo.y);
     int o = 0;
-    ImprimirReglas((220 - 45) / 2, 12);
-    MoverCursor((220 - 75) / 2, 21);
-    std::cout << blue << char(254) << " El Dealer repartirá dos cartas descubiertas al jugador y una descubierta a sí mismo.";
-    MoverCursor((220 - 78) / 2, 23);
-    std::cout << blue << char(254) << " El jugador decide si pide más cartas o se planta con las dos que ya recibió";
-    MoverCursor((220 - 117) / 2, 25);
-    std::cout << blue << char(254) << " Al pedir una carta su valor se suma a la puntuación del jugador. Al plantarse, el jugador no podrá pedir más cartas.";
-    MoverCursor((220 - 139) / 2, 27);
-    std::cout << char(254) << " Las cartas del 2 al 10 valen su valor numérico; las cartas J, Q y K valen 10 y el as vale 1 o 11 según la conveniencia del jugador.";
-    MoverCursor((220 - 192) / 2, 29);
-    std::cout << char(254) << " Una vez terminada la mano del jugador el Dealer jugará la suya. Los jugadores que se queden más lejos de 21 que el Dealer o que hayan sobrepasado este valor, pierden.";
-    MoverCursor((220 - 164) / 2, 31);
-    std::cout << char(254) << " El Dealer no tiene la posibilidad de tomar alguna decisión sobre el juego. Si su puntuación es de 16 o menos tiene que pedir, si suma 17 o más tiene que plantarse.";
-    MoverCursor((220 - 128) / 2, 33);
-    std::cout << char(254) << " Los jugadores que tengan 21 o esten más cerca de 21 que el Dealer, ganan. Además, si el Dealer sobrepasa el 21, el jugador gana.";
-    MoverCursor((220 - 77) / 2, 35);
-    std::cout << char(254) << " Si el jugador toma 5 cartas y no sobrepasa o alcanza el 21, el jugador gana.";
-    MoverCursor((220 - 61) / 2, 37);
-    std::cout << char(254) << " Si ambos tienen el mismo valor el juego termina en un empate.";
-    ImprimirControles((220 - 64) / 2, 39);
-    MoverCursor((220 - 81) / 2, 47);
-    std::cout << blue << char(254) << " Para movimiento entre opciones se utilizan las flechas direccionales del teclado.";
-    MoverCursor((220 - 145) / 2, 49);
-    std::cout << char(254) << " Para acceder a alguna opción se utiliza la tecla <ENTER>. Algunas de las opciones son 'Pedir', 'Plantar', 'OK' y las opciones del menú principal." << red;
-    DibujarMarco(7, 2, -3 + (220 - 2) / 2, 53);
-    MoverCursor((220 - 2) / 2, 54);
+    ImprimirReglas(layout.reglas.x, layout.reglas.y);
+
+    std::vector<std::string> lineas = {
+        "El Dealer repartirá dos cartas descubiertas al jugador y una descubierta a sí mismo.",
+        "El jugador decide si pide más cartas o se planta con las dos que ya recibió",
+        "Al pedir una carta su valor se suma a la puntuación del jugador. Al plantarse, el jugador no podrá pedir más cartas.",
+        "Las cartas del 2 al 10 valen su valor numérico; las cartas J, Q y K valen 10 y el as vale 1 o 11 según la conveniencia del jugador.",
+        "Una vez terminada la mano del jugador el Dealer jugará la suya. Los jugadores que se queden más lejos de 21 que el Dealer o que hayan sobrepasado este valor, pierden.",
+        "El Dealer no tiene la posibilidad de tomar alguna decisión sobre el juego. Si su puntuación es de 16 o menos tiene que pedir, si suma 17 o más tiene que plantarse.",
+        "Los jugadores que tengan 21 o esten más cerca de 21 que el Dealer, ganan. Además, si el Dealer sobrepasa el 21, el jugador gana.",
+        "Si el jugador toma 5 cartas y no sobrepasa o alcanza el 21, el jugador gana.",
+        "Si ambos tienen el mismo valor el juego termina en un empate."
+    };
+
+    int y = ClampToScreen(layout.reglas.y + 9, tamano.height);
+    for (const auto &linea : lineas) {
+        int anchoLinea = static_cast<int>(linea.size()) + 2;
+        int x = ClampToScreen(CentrarEnDimension(tamano.width, anchoLinea), tamano.width, anchoLinea);
+        MoverCursor(x, y);
+        std::cout << blue << char(254) << " " << linea;
+        y = ClampToScreen(y + 2, tamano.height);
+    }
+
+    ImprimirControles(CentrarEnDimension(tamano.width, 64), ClampToScreen(y + 2, tamano.height));
+    int ayudaY = ClampToScreen(y + 10, tamano.height);
+    int ayudaY2 = ClampToScreen(ayudaY + 2, tamano.height);
+    std::string controles = "Para movimiento entre opciones se utilizan las flechas direccionales del teclado.";
+    std::string enter = "Para acceder a alguna opción se utiliza la tecla <ENTER>. Algunas de las opciones son 'Pedir', 'Plantar', 'OK' y las opciones del menú principal.";
+    MoverCursor(CentrarEnDimension(tamano.width, static_cast<int>(controles.size()) + 2), ayudaY);
+    std::cout << blue << char(254) << " " << controles;
+    MoverCursor(CentrarEnDimension(tamano.width, static_cast<int>(enter.size()) + 2), ayudaY2);
+    std::cout << char(254) << " " << enter << red;
+    DibujarMarco(layout.okMarco.width, layout.okMarco.height, layout.okMarco.x, layout.okMarco.y);
+    MoverCursor(layout.okTexto.x, layout.okTexto.y);
     std::cout << green << "OK." << std::endl;
     while (true) {
         o = LeerTecla();
@@ -347,19 +419,31 @@ void Creditos() {
     LimpiarPantalla();
     int o = 0;
     LimpiarPantalla();
-    ImprimirTitulo((220 - 181) / 2, 0);
-    ImprimirCreditos((220 - 55) / 2, 12);
-    MoverCursor((220 - 166) / 2, 24);
-    std::cout << blue << "Este programa fue hecho como proyecto final de la clase de Programación de Computadoras de la Universidad de Sonora a cargo de la maestra Irene Rodriguez Castillo";
-    ImprimirAutores((220 - 52) / 2, 28);
-    MoverCursor((220 - 28) / 2, 39);
-    std::cout << blue << char(254) << " Carlos Eduardo Gonzalez Ruiz";
-    MoverCursor((220 - 25) / 2, 41);
-    std::cout << blue << char(254) << " Luis Mario Sainz Peñuñuri";
-    MoverCursor((220 - 30) / 2, 43);
-    std::cout << blue << char(254) << " Ezequiel Isaac Rodriguez Tenorio" << red;
-    DibujarMarco(7, 2, -3 + (220 - 2) / 2, 47);
-    MoverCursor((220 - 2) / 2, 48);
+    TerminalSize tamano = ObtenerTamanoTerminal();
+    JuegoLayout layoutTitulo = CalcularLayoutJuego(tamano);
+    ImprimirTitulo(layoutTitulo.titulo.x, layoutTitulo.titulo.y);
+    ImprimirCreditos(CentrarEnDimension(tamano.width, 55), ClampToScreen(12, tamano.height));
+    std::string texto = "Este programa fue hecho como proyecto final de la clase de Programación de Computadoras de la Universidad de Sonora a cargo de la maestra Irene Rodriguez Castillo";
+    MoverCursor(CentrarEnDimension(tamano.width, static_cast<int>(texto.size())), ClampToScreen(24, tamano.height));
+    std::cout << blue << texto;
+    ImprimirAutores(CentrarEnDimension(tamano.width, 52), ClampToScreen(28, tamano.height));
+    std::vector<std::string> autores = {
+        "Carlos Eduardo Gonzalez Ruiz",
+        "Luis Mario Sainz Peñuñuri",
+        "Ezequiel Isaac Rodriguez Tenorio"
+    };
+    int autoresY = ClampToScreen(39, tamano.height);
+    for (const auto &autor : autores) {
+        int ancho = static_cast<int>(autor.size()) + 2;
+        int x = ClampToScreen(CentrarEnDimension(tamano.width, ancho), tamano.width, ancho);
+        MoverCursor(x, autoresY);
+        std::cout << blue << char(254) << " " << autor;
+        autoresY = ClampToScreen(autoresY + 2, tamano.height);
+    }
+    ElementoLayout okMarco = CrearElemento(CentrarEnDimension(tamano.width, 7) - 3, ClampToScreen(47, tamano.height), 7, 2, tamano);
+    ElementoLayout okTexto = CrearElemento(CentrarEnDimension(tamano.width, 2), ClampToScreen(48, tamano.height), 2, 1, tamano);
+    DibujarMarco(okMarco.width, okMarco.height, okMarco.x, okMarco.y);
+    MoverCursor(okTexto.x, okTexto.y);
     std::cout << green << "OK." << std::endl;
     while (true) {
         o = LeerTecla();
