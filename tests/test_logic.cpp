@@ -2,6 +2,7 @@
 #include "catch.hpp"
 
 #include <set>
+#include <string>
 #include <vector>
 
 #include "GameLogic.h"
@@ -50,8 +51,11 @@ TEST_CASE("Dealer se planta en 17 o ms") {
     Baraja baraja;
     LlenarBaraja(baraja);
 
+    SeleccionarModo(GameModeType::Clasico);
+    const GameMode &modo = ObtenerModoActual();
+
     std::vector<int> manoInicial = {9, 6};
-    DealerSimulationResult resultado = SimularJuegoDealer(manoInicial, 20, baraja);
+    DealerSimulationResult resultado = SimularJuegoDealer(manoInicial, 20, baraja, modo);
 
     REQUIRE(resultado.total == 17);
     REQUIRE(resultado.drawnCards.empty());
@@ -61,8 +65,10 @@ TEST_CASE("Dealer pide hasta cinco cartas si es necesario") {
     Baraja baraja;
     LlenarBaraja(baraja);
 
+    const GameMode &modo = ObtenerModoActual();
+
     std::vector<int> manoInicial = {1, 2};
-    DealerSimulationResult resultado = SimularJuegoDealer(manoInicial, 3, baraja);
+    DealerSimulationResult resultado = SimularJuegoDealer(manoInicial, 3, baraja, modo);
 
     REQUIRE(resultado.drawnCards.size() >= 1);
     REQUIRE(resultado.drawnCards.size() <= 3);
@@ -79,6 +85,37 @@ TEST_CASE("Navegacin del men envuelve arriba y abajo") {
 
     opcion = ActualizarOpcionMenu(opcion, DOWN);
     REQUIRE(opcion == INSTRUCCIONES);
+}
+
+TEST_CASE("Selección de modos avanza y se puede fijar por tipo") {
+    SeleccionarModo(GameModeType::Clasico);
+    const std::string clasico = ObtenerModoActual().nombre;
+
+    CambiarModo(1);
+    REQUIRE(ObtenerModoActual().nombre != clasico);
+
+    SeleccionarModo(GameModeType::Multironda);
+    REQUIRE(ObtenerModoActual().tipo == GameModeType::Multironda);
+}
+
+TEST_CASE("Prctica convierte las derrotas en empates") {
+    SeleccionarModo(GameModeType::Practica);
+    const GameMode &modo = ObtenerModoActual();
+    REQUIRE(AjustarResultadoPorModo(PERDIO, modo) == EMPATE);
+}
+
+TEST_CASE("Modo de mano corta limita cartas del dealer y usa objetivo reducido") {
+    SeleccionarModo(GameModeType::ManoCorta);
+    const GameMode &modo = ObtenerModoActual();
+
+    Baraja baraja;
+    LlenarBaraja(baraja);
+    std::vector<int> manoDealer = {0};
+    DealerSimulationResult resultado = SimularJuegoDealer(manoDealer, 5, baraja, modo);
+    REQUIRE(static_cast<int>(resultado.drawnCards.size()) <= modo.maxCartasDealer - 1);
+
+    int resultadoRonda = DeterminarResultadoMano(17, 16, modo.maxCartasJugador, 2, modo);
+    REQUIRE(resultadoRonda == GANO);
 }
 
 #ifdef _WIN32

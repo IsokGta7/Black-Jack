@@ -115,74 +115,90 @@ ResultadosLayout CalcularLayoutResultados(const TerminalSize &tamano) {
 void Jugar() {
     //Posición del cursor para jugar de nuevo.
     int posf = AGAIN;
+    //Barajas
     Baraja baraja;
-    LlenarBaraja(baraja);
     do {
-        LimpiarPantalla();
-        TerminalSize tamano = ObtenerTamanoTerminal();
-        JuegoLayout layout = CalcularLayoutJuego(tamano);
-        ImprimirTitulo(layout.titulo.x, layout.titulo.y);
-        int sumaD = 0, sumaJ = 0, x = 4, pos = PEDIR, cartasD = 0, cartasJ = 0, pull = 0, o = PEDIR;
-        bool finished = false;
-        Shuffle(baraja);
-        //El maximo de cartas que ambos pueden tener es 5.
-        int * barajaJ = CrearArreglo(5);
-        int * barajaD = CrearArreglo(5);
-        //Impresión de la interfaz
-        MoverCursor(5, 55);
-        std::cout << green << "Pedir";
-        MoverCursor(18, 55);
-        std::cout << "Plantar";
-        MoverCursor(4, 12);
-        std::cout << red << "Dealer:" << std::endl;
-        //Imprime la carta volteada del dealer
-        ImprimirCartaVolteada(x + 17, 13, 15, 13);
-        //Cada vez que se "tome" una carta aumentamos el valor de pull para llevar la cuenta de que tarjeta se tiene que tomar.
-        ImprimirCarta(x, 13, 13, 13, pull, baraja);
-        barajaD[0] = pull;
-        cartasD++;
-        pull++;
+        const GameMode &modo = ObtenerModoActual();
+        int victorias = 0;
+        int empates = 0;
+        int derrotas = 0;
+        int rondasTotales = std::max(1, modo.rondas);
+        for (int ronda = 1; ronda <= rondasTotales; ++ronda) {
+            LimpiarPantalla();
+            TerminalSize tamano = ObtenerTamanoTerminal();
+            JuegoLayout layout = CalcularLayoutJuego(tamano);
+            ImprimirTitulo(layout.titulo.x, layout.titulo.y);
+            MoverCursor(4, 9);
+            std::cout << yellow << "Modo: " << modo.nombre;
+            MoverCursor(4, 10);
+            std::cout << yellow << FormatearModoResumen(modo);
+            MoverCursor(4, 11);
+            std::cout << yellow << "Ronda " << ronda << " de " << rondasTotales;
 
-        MoverCursor(4, 29);
-        std::cout << green << "Jugador: " << std::endl;
-        //El jugador comienza con dos cartas las cuales se sacan aquí.
-        for (int j = 0; j <= 1; j++) {
-            ImprimirCarta(x, 30, 13, 13, pull, baraja);
-            barajaJ[j] = pull;
-            cartasJ++;
+            int sumaD = 0, sumaJ = 0, x = 4, pos = PEDIR, cartasD = 0, cartasJ = 0, pull = 0, o = PEDIR;
+            bool finished = false;
+            LlenarBaraja(baraja);
+            Shuffle(baraja);
+
+            int *barajaJ = CrearArreglo(modo.maxCartasJugador);
+            int *barajaD = CrearArreglo(modo.maxCartasDealer);
+            //Impresión de la interfaz
+            MoverCursor(5, 55);
+            std::cout << green << "Pedir";
+            MoverCursor(18, 55);
+            std::cout << "Plantar";
+            MoverCursor(4, 12);
+            std::cout << red << "Dealer:" << std::endl;
+            //Imprime la carta volteada del dealer
+            ImprimirCartaVolteada(x + 17, 13, 15, 13);
+            //Cada vez que se "tome" una carta aumentamos el valor de pull para llevar la cuenta de que tarjeta se tiene que tomar.
+            ImprimirCarta(x, 13, 13, 13, pull, baraja);
+            barajaD[0] = pull;
+            cartasD++;
             pull++;
-            x += 17;
-        }
-        //Calculamos ambas sumas para poder imprimirlas.
-        sumaJ = CalcularSuma(barajaJ, cartasJ, baraja);
-        sumaD = CalcularSuma(barajaD, cartasD, baraja);
 
-        MoverCursor(4, 49);
-        std::cout << red << "Puntuación Dealer: " << sumaD;
-        MoverCursor(4, 50);
-        std::cout << green << "Puntuación Jugador: " << sumaJ;
+            MoverCursor(4, 29);
+            std::cout << green << "Jugador: " << std::endl;
+            //El jugador comienza con dos cartas las cuales se sacan aquí.
+            for (int j = 0; j <= 1 && j < modo.maxCartasJugador; j++) {
+                ImprimirCarta(x, 30, 13, 13, pull, baraja);
+                barajaJ[j] = pull;
+                cartasJ++;
+                pull++;
+                x += 17;
+            }
+            //Calculamos ambas sumas para poder imprimirlas.
+            sumaJ = CalcularSuma(barajaJ, cartasJ, baraja);
+            sumaD = CalcularSuma(barajaD, cartasD, baraja);
 
-        DibujarMarco(7, 2, 3, 54);
-        //Si el jugador obtiene una carta de valor 10 y un as puede ganar por lo que confirmarmos si ha ganado o no.
-        if (sumaJ == 21) {
-            posf = Resultados(GANO);
-            finished = true;
-        }
+            MoverCursor(4, 49);
+            std::cout << red << "Puntuación Dealer: " << sumaD;
+            MoverCursor(4, 50);
+            std::cout << green << "Puntuación Jugador: " << sumaJ;
 
-        //Si el jugador no ha terminado su mano se repite la acción de pedir una carta o plantar su mano.
-        while (finished == false) {
-            o = PEDIR;
-            while (o != ENTER) {
-                o = LeerTecla();
-                switch (o) {
-                case RIGHT:
-                    if (pos == PLANTAR) break;
-                    else {
-                        pos = PLANTAR;
-                        DibujarMarco(7, 2, 17, 54);
-                        BorrarMarco(7, 2, 3, 54);
-                        break;
-                    }
+            DibujarMarco(7, 2, 3, 54);
+            //Si el jugador obtiene una carta de valor 10 y un as puede ganar por lo que confirmarmos si ha ganado o no.
+            if (sumaJ == modo.objetivo) {
+                int resultado = AjustarResultadoPorModo(GANO, modo);
+                if (resultado == GANO) victorias++;
+                else empates++;
+                finished = true;
+            }
+
+            //Si el jugador no ha terminado su mano se repite la acción de pedir una carta o plantar su mano.
+            while (finished == false) {
+                o = PEDIR;
+                while (o != ENTER) {
+                    o = LeerTecla();
+                    switch (o) {
+                    case RIGHT:
+                        if (pos == PLANTAR) break;
+                        else {
+                            pos = PLANTAR;
+                            DibujarMarco(7, 2, 17, 54);
+                            BorrarMarco(7, 2, 3, 54);
+                            break;
+                        }
                     case LEFT:
                         if (pos == PEDIR) break;
                         else {
@@ -191,47 +207,74 @@ void Jugar() {
                             BorrarMarco(7, 2, 17, 54);
                             break;
                         }
+                    }
+                }
+                //Al presionar enter se va a romper el ciclo, si pide una carta sumamos una carta más y calculamos la puntuación, de lo contrario se realiza el juego del Dealer.
+                if (pos == PEDIR && cartasJ < modo.maxCartasJugador) {
+                    ImprimirCarta(x, 30, 13, 13, pull, baraja);
+                    barajaJ[cartasJ] = pull;
+                    pull++;
+                    x += 17;
+                    cartasJ++;
+                    sumaJ = CalcularSuma(barajaJ, cartasJ, baraja);
+                    MoverCursor(4, 50);
+                    std::cout << green << "Puntuación Jugador: " << sumaJ;
+                    //Revisamos todas las condiciones para los resultados
+                    if (sumaJ > modo.objetivo) {
+                        int resultado = AjustarResultadoPorModo(PERDIO, modo);
+                        if (resultado == EMPATE) empates++;
+                        else derrotas++;
+                        finished = true;
+                    } else if ((sumaJ == modo.objetivo) || (cartasJ == modo.maxCartasJugador && sumaJ < modo.objetivo && modo.ganaPorMaxCartas)) {
+                        int resultado = AjustarResultadoPorModo(GANO, modo);
+                        if (resultado == GANO) victorias++;
+                        else empates++;
+                        finished = true;
+                    }
+                } else {
+                    sumaD = JuegoDealer(barajaD, cartasD, baraja, pull, modo);
+                    int resultado = DeterminarResultadoMano(sumaJ, sumaD, cartasJ, cartasD, modo);
+                    if (resultado == GANO) victorias++;
+                    else if (resultado == PERDIO) derrotas++;
+                    else empates++;
+                    finished = true;
+                }
+
+                if (cartasJ >= modo.maxCartasJugador && finished == false) {
+                    sumaD = JuegoDealer(barajaD, cartasD, baraja, pull, modo);
+                    int resultado = DeterminarResultadoMano(sumaJ, sumaD, cartasJ, cartasD, modo);
+                    if (resultado == GANO) victorias++;
+                    else if (resultado == PERDIO) derrotas++;
+                    else empates++;
+                    finished = true;
                 }
             }
-            //Al presionar enter se va a romper el ciclo, si pide una carta sumamos una carta más y calculamos la puntuación, de lo contrario se realiza el juego del Dealer.
-            if (pos == PEDIR) {
-                ImprimirCarta(x, 30, 13, 13, pull, baraja);
-                barajaJ[cartasJ] = pull;
-                pull++;
-                x += 17;
-                cartasJ++;
-                sumaJ = CalcularSuma(barajaJ, cartasJ, baraja);
-                MoverCursor(4, 50);
-                std::cout << green << "Puntuación Jugador: " << sumaJ;
-                //Revisamos todas las condiciones para los resultados
-                if (sumaJ > 21) {
-                    posf = Resultados(PERDIO);
-                    finished = true;
-                } else if ((sumaJ == 21) || (cartasJ == 5 && sumaJ < 21)) {
-                    posf = Resultados(GANO);
-                    finished = true;
+
+            DestruirArreglo(barajaJ);
+            DestruirArreglo(barajaD);
+
+            if (ronda < rondasTotales) {
+                MoverCursor(4, 52);
+                std::cout << yellow << "Ronda terminada. Marcador: " << victorias << "G-" << empates << "E-" << derrotas << "P";
+                MoverCursor(4, 53);
+                std::cout << yellow << "Presiona ENTER para la siguiente ronda.";
+                while (LeerTecla() != ENTER) {
                 }
-            } else {
-                sumaD = JuegoDealer(barajaD, cartasD, baraja, pull);
-                if (sumaD > 21 || sumaJ > sumaD) {
-                    posf = Resultados(GANO);
-                } else if (sumaD > sumaJ) {
-                    posf = Resultados(PERDIO);
-                } else {
-                    posf = Resultados(EMPATE);
-                }
-                finished = true;
             }
         }
-        DestruirArreglo(barajaJ);
-        DestruirArreglo(barajaD);
+
+        int resultadoFinal = EMPATE;
+        if (victorias > derrotas) resultadoFinal = GANO;
+        else if (derrotas > victorias) resultadoFinal = PERDIO;
+        resultadoFinal = AjustarResultadoPorModo(resultadoFinal, modo);
+
+        GameSummary resumen{modo, resultadoFinal, victorias, empates, derrotas, std::max(1, modo.rondas)};
+        posf = Resultados(resumen);
     } while (posf != SALIRJ); //Este while permite que el jugador pueda elegir jugar de nuevo en la pantalla de resultados.
 }
-
-//***************************************************************************************************************************************************************************************************************************************
-int JuegoDealer(int * & barajaD, int ncartas, Baraja & baraja, int pull) {
+int JuegoDealer(int * & barajaD, int ncartas, Baraja & baraja, int pull, const GameMode &modo) {
     std::vector<int> mano(barajaD, barajaD + ncartas);
-    DealerSimulationResult resultado = SimularJuegoDealer(mano, pull, baraja);
+    DealerSimulationResult resultado = SimularJuegoDealer(mano, pull, baraja, modo);
     int x = 21;
 
     for (int carta : resultado.drawnCards) {
@@ -252,7 +295,7 @@ int JuegoDealer(int * & barajaD, int ncartas, Baraja & baraja, int pull) {
 }
 
 //***************************************************************************************************************************************************************************************************************************************
-int Resultados(int r) {
+int Resultados(const GameSummary &summary) {
     int o = 0, pos = AGAIN;
     //Se imprimen los marcos de la pantalla de resultados.
 
@@ -266,7 +309,7 @@ int Resultados(int r) {
     DibujarMarco(layout.marcoHueco.width, layout.marcoHueco.height, layout.marcoHueco.x, layout.marcoHueco.y);
 
     //Dependiendo del resultado imprimimos un titulo.
-    switch (r) {
+    switch (summary.resultadoFinal) {
     case PERDIO:
         ImprimirPerder(layout.tituloPerdio.x, layout.tituloPerdio.y);
         break;
@@ -277,6 +320,18 @@ int Resultados(int r) {
         ImprimirEmpate(layout.tituloEmpate.x, layout.tituloEmpate.y);
         break;
     }
+
+    int infoX = layout.marcoHueco.x + 4;
+    int infoY = layout.marcoHueco.y + 3;
+    MoverCursor(infoX, infoY);
+    std::cout << yellow << "Modo: " << summary.modo.nombre;
+    MoverCursor(infoX, infoY + 1);
+    std::cout << yellow << FormatearModoResumen(summary.modo);
+    MoverCursor(infoX, infoY + 2);
+    std::cout << yellow << "Rondas jugadas: " << summary.rondasJugadas;
+    MoverCursor(infoX, infoY + 3);
+    std::cout << yellow << "Marcador G/E/P: " << summary.victorias << "/" << summary.empates << "/" << summary.derrotas;
+
     //Se pregunta si se desea jugar de nuevo o no.
     MoverCursor(layout.volver.x, layout.volver.y);
     std::cout << yellow << "Volver a jugar" << std::endl;
@@ -300,7 +355,6 @@ int Resultados(int r) {
     //   EstablecerColor(NEGRO,BLANCO);
     return pos;
 }
-
 //***************************************************************************************************************************************************************************************************************************************
 //***************************************************************************************************************************************************************************************************************************************
 void ImprimirCarta(int x, int y, int w, int h, int carta, Baraja & baraja) {
