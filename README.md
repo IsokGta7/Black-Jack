@@ -1,100 +1,97 @@
-# BlackJack en C++ (Terminal GUI - Windows)
+# BlackJack en C++ para terminal
 
-> Un juego de BlackJack completamente desarrollado desde cero en C++, con una interfaz de usuario basada en terminal específicamente diseñada para sistemas Windows.
+[![CI](https://github.com/IsokGta7/Black-Jack/actions/workflows/ci.yml/badge.svg)](https://github.com/IsokGta7/Black-Jack/actions/workflows/ci.yml)
 
-## 📜 Descripción del Proyecto
+Un juego de BlackJack escrito desde cero en C++17, con interfaz de texto en la terminal:
+marcos con caracteres Unicode, colores, animaciones de revelado y un layout que se centra
+según el tamaño de la ventana. Compila con `make` en Linux, macOS y Windows (MinGW-w64);
+la integración continua compila el juego y corre las pruebas en los tres sistemas.
 
-Entre las funcionalidades destacadas se incluyen:
+![Partida en curso (Windows 11, CMD a 110x32 con UTF-8)](image.png)
 
-- Baraja dinámica con mezcla aleatoria (shuffling).
-- Jugador y dealer con lógica independiente.
-- Control de flujo del juego: repartir cartas, plantarse, pedir carta, y BlackJack automático.
-- Interfaz gráfica mediante una terminal: uso de colores, bordes, animaciones simples y textos alineados.
-- Soporte para reiniciar partida y juego continuo sin cerrar la aplicación.
+## Cómo se juega
 
-## 🖥️ Tecnologías
+El objetivo es acercarse más que el dealer a 21 sin pasarse. Las figuras valen 10 y el As
+vale 11 o 1, lo que más convenga a la mano.
 
-- Lenguaje: C++
-- Entorno: Consola de Windows (CMD/Powershell)
+1. Al empezar recibes tus cartas y el dealer las suyas.
+2. En tu turno eliges **Pedir** (otra carta) o **Plantar** (te quedas con tu suma).
+3. Si te pasas del objetivo pierdes la mano; si llegas exactamente a él, la ganas.
+4. Cuando te plantas, el dealer pide cartas hasta llegar a su mínimo (17 en el modo
+   clásico) o al límite de cartas.
+5. Gana la suma más alta; si el dealer se pasa, ganas tú. Con sumas iguales hay empate.
+6. En la pantalla de resultados eliges volver a jugar o regresar al menú.
 
-## 📦 Cómo Clonar
+Controles:
+
+- **Flechas arriba/abajo**: moverse por el menú y por las opciones de la partida.
+- **Flechas izquierda/derecha**: cambiar el modo de juego en el menú principal y elegir
+  opción en la pantalla de resultados.
+- **Enter**: confirmar (`Pedir`, `Plantar`, `OK`, etc.).
+- El menú principal ofrece *Jugar*, *Instrucciones*, *Créditos* y *Salir*.
+
+## Modos de juego
+
+El modo activo aparece debajo del título y en la pantalla de resultados.
+
+- **Clásico**: objetivo 21, hasta 5 cartas por lado y el dealer se planta en 17. Si
+  juntas 5 cartas sin pasarte, ganas la mano.
+- **Práctica**: las mismas reglas, pero una derrota cuenta como empate.
+- **Multironda**: serie al mejor de 3 manos; el marcador se conserva entre manos.
+- **Mano corta**: objetivo 18, como máximo 3 cartas para ti y 4 para el dealer, que se
+  planta en 16.
+
+## Compilar y ejecutar
+
+Se necesita un compilador con C++17 (`g++` o `clang++`) y `make`.
 
 ```bash
-git clone git@github.com:IsokGta7/Black-Jack.git
+git clone https://github.com/IsokGta7/Black-Jack.git
 cd Black-Jack
+make            # genera bin/Blackjack
+./bin/Blackjack
+make test       # compila y corre las pruebas
+make clean
 ```
 
-## 🛠️ Prerrequisitos
+- **Linux**: instala `g++` y `make` con el gestor de paquetes.
+- **macOS**: las Xcode Command Line Tools traen `clang++` y `make`
+  (`make CXX=clang++`).
+- **Windows**: con MinGW-w64, por ejemplo desde MSYS2 (`pacman -S make
+  mingw-w64-ucrt-x86_64-gcc`), ejecuta `make` en la terminal UCRT64. También se puede abrir
+  `Blackjack.cbp` en Code::Blocks con un kit MinGW. Visual Studio (MSVC) no está
+  soportado.
 
-- **Sistema operativo**
-  - **Windows 10/11**: funciona en **CMD** o **PowerShell** con soporte ANSI. Es necesario habilitar UTF-8 (`chcp 65001`) si tu perfil no lo usa por defecto.
-  - **Linux**: cualquier terminal moderna con soporte ANSI/UTF-8 (GNOME Terminal, Konsole, Alacritty). Evita TTYs sin colores.
-  - **macOS**: probado en Terminal.app e iTerm2 con UTF-8 habilitado; asegúrate de que la opción *Use bright colors for bold text* esté activa para ver los resaltados.
-- **Compilador**: MinGW-w64 en Windows o `g++`/`clang++` con soporte **C++17** en Linux/macOS.
-- **Herramientas**: `make` para builds rápidos. IDE recomendado: [Code::Blocks](https://www.codeblocks.org/downloads/) (Windows) o cualquier editor con integración de `make`.
-- **Terminal**: al menos **100x30** caracteres para evitar cortes en las cartas y los marcos. En Windows el tamaño se ajusta automáticamente; en Linux/macOS conviene maximizar o ampliar el ancho antes de ejecutar.
-- **Codificación**: el juego fuerza UTF-8 en Windows; en Unix asegúrate de que `LANG` y `LC_ALL` usen UTF-8 para que los bordes y palos se dibujen correctamente.
+## Pruebas
 
-## 🧱 Compilación y Ejecución
+`make test` compila `bin/tests/BlackjackTests` y lo ejecuta. Las pruebas usan
+[doctest](https://github.com/doctest/doctest), incluido en `tests/doctest.h` con su
+licencia MIT, y cubren la lógica sin interfaz: la suma con ases, que la baraja barajada
+conserve las 52 cartas, cuándo pide y cuándo se planta el dealer, las reglas de cada modo,
+la navegación del menú y de los resultados, y que todos los elementos del layout queden
+dentro de la terminal en tamaños de 80x24 a 220x60. En Windows hay una prueba más, para la
+traducción de las teclas extendidas de `_getch()`.
 
-### Windows (Code::Blocks o consola)
-1. Abre **Code::Blocks** y carga `Blackjack.cbp`, o abre una consola en la raíz del proyecto.
-2. Compila con **Build/F9** en el IDE, o ejecuta `mingw32-make` desde la consola si tienes MinGW en el `PATH`.
-3. Ejecuta con **Run/Ctrl+F10** o lanzando el binario generado. Si la ventana se cierra al terminar, vuelve a abrir el ejecutable desde el IDE para ver el resumen.
-4. Si ves caracteres extraños, ejecuta antes `chcp 65001` y expande la ventana a 100x30.
+## Terminal y codificación
 
-### Linux
-1. Instala `g++`/`clang++` y `make` desde tu gestor de paquetes.
-2. Corre `make` para compilar (`bin/Blackjack`) o `make test` para compilar y ejecutar las pruebas lógicas.
-3. Lanza `./bin/Blackjack`. Se detectan las flechas a través de secuencias ANSI, así que evita emuladores minimalistas sin soporte.
-4. Si la fuente no tiene glifos de caja/naipes, cambia a una monoespaciada con Unicode completo (p. ej. Fira Code, JetBrains Mono).
+- Usa una terminal de al menos **100x30** caracteres con UTF-8 y una fuente monoespaciada
+  que tenga caracteres de caja (`│─┐└╔╗╚╝`, `░▒▓`) y palos de baraja.
+- En Windows el juego cambia la salida de la consola a UTF-8 e intenta ajustar el tamaño de
+  la ventana. Si aun así ves símbolos extraños, ejecuta `chcp 65001` antes de iniciar.
+- En Linux y macOS el tamaño de la ventana no se cambia; el layout se centra con códigos
+  ANSI según el tamaño que reporta la terminal, y las flechas se leen como secuencias ANSI.
+  Revisa que `LANG`/`LC_ALL` usen UTF-8.
 
-### macOS
-1. Instala `g++`/`clang++` y `make` (con Xcode Command Line Tools o Homebrew).
-2. Ejecuta `make` en la raíz para generar el binario.
-3. Corre `./bin/Blackjack` desde **Terminal.app** o **iTerm2**. Mantén la ventana en **100x30** y con UTF-8; si usas iTerm2 activa *Report modifiers* para que las flechas se detecten bien.
-4. Si la animación parpadea, desactiva el *ligado de fuentes* o usa el modo de pantalla completa para evitar recortes.
+Las animaciones se controlan con variables de entorno:
 
-## 🕹️ Controles en el Juego
+- `BJ_ANIMATIONS=off` o `BJ_DISABLE_ANIMATIONS=1` las desactivan (útil en consolas lentas
+  o si la pantalla parpadea).
+- `BJ_ANIMATION_DELAY_MS=5` fija el retardo de cada paso en milisegundos.
 
-- **Flechas arriba/abajo:** navegar en el menú y entre opciones de juego.
-- **Enter:** confirmar opción (`Pedir`, `Plantar`, `OK`, etc.).
-- **Opciones principales:** *Jugar*, *Instrucciones*, *Créditos* y *Salir*.
-- **Flechas izquierda/derecha:** alternar el **modo de juego** en el menú principal y en la pantalla de resultados.
-- **Atajos rápidos:** `Ctrl+C` cierra la aplicación; evita usarlos si la animación está en curso para no dejar arte en pantalla.
+## Solución de problemas
 
-## 🎮 Modos de juego y atajos
-
-- **Clásico**: una mano estándar a 21, límite de 5 cartas por jugador y dealer, dealer se planta en 17.
-- **Práctica**: misma regla que el Clásico pero las derrotas se registran como empate; ideal para aprender sin penalización.
-- **Multironda**: serie al mejor de 3 rondas; conserva el puntaje entre manos.
-- **Mano corta**: objetivo reducido a 18, el dealer se planta en 16 y el jugador gana automáticamente al llegar al máximo de cartas.
-- **Cómo cambiar**: usa **←/→** en el menú principal. El modo activo aparece debajo del título y en el panel de resultados.
-
-## ✨ Animaciones, estilos y compatibilidad
-
-- **Animación de revelado**: las cartas y marcos aparecen con sombreado progresivo. Controla la cadencia con `BJ_ANIMATION_DELAY_MS=5` (milisegundos) o desactívala con `BJ_ANIMATIONS=off` / `BJ_DISABLE_ANIMATIONS=1` si la terminal parpadea.
-- **Estilos de marco**: se usan bordes Unicode simples y dobles (`│─┐└╔╗╚╝`) y rellenos texturizados (`░▒▓`). Requieren fuentes monoespaciadas con soporte de dibujo de caja y UTF-8.
-- **Compatibilidad de colores**: en Windows 10/11 se habilita automáticamente el modo ANSI. En Linux/macOS asegúrate de que tu terminal soporte secuencias de 256 colores para ver los degradados de la animación; si no, el juego sigue funcionando con relleno plano.
-- **Tamaños y centrado**: el layout se centra según el tamaño reportado por la terminal. En Windows la ventana intenta ajustarse; en Linux/macOS conviene fijar 100x30 y desactivar el ajuste automático de anchura si tu emulador lo aplica.
-- **Teclas extendidas**: en Windows se traducen los códigos extendidos de `_getch()` y en Unix se leen secuencias ANSI. Si una flecha no responde, revisa que la app de terminal no tenga capturas de teclas (p. ej. multiplexores).
-
-## 🖥️ Consideraciones de Plataforma y Codificación
-
-- La interfaz ahora utiliza glifos Unicode (bordes y palos) y fuerza la salida a UTF-8 en Windows para evitar símbolos incorrectos en Windows 10/11.
-- El tamaño de ventana sólo se ajusta automáticamente en Windows; en otros sistemas el juego se centra mediante códigos ANSI sin cambiar la resolución.
-- Si ves artefactos, valida que la terminal use UTF-8 y que las fuentes incluyan caracteres de caja y naipes.
-- Las animaciones de revelado se pueden desactivar exportando `BJ_ANIMATIONS=off` o `BJ_DISABLE_ANIMATIONS=1` antes de ejecutar el binario, útil en consolas lentas.
-
-## 🔧 Solución de Problemas
-
-- **La ventana se corta o el texto se ve desalineado:** maximiza la consola o aumenta el tamaño de la ventana antes de iniciar.
-- **Símbolos extraños en pantalla:** cambia la codificación de la consola a UTF-8 (`chcp 65001`) y asegúrate de no mezclar fuentes sin soporte Unicode.
-- **No compila en Code::Blocks:** verifica que el kit MinGW esté instalado/seleccionado y que `Blackjack.cbp` se haya abierto desde la ruta correcta del clon (`Black-Jack`).
-- **En Linux/macOS:** si el cursor queda visible o la consola no se limpia, valida que estés ejecutando en una terminal con soporte ANSI (p. ej. GNOME Terminal, iTerm2).
-
-## 🖼️ Vista Previa
-
-![Juego BlackJack en ejecución (captura en Windows con UTF-8 y colores ANSI activados)](image.png)
-
-> La captura anterior se tomó en Windows 11 con CMD a 110x32 y `chcp 65001`. En Linux/macOS debería verse igual con soporte ANSI/UTF-8; en terminales sin colores los marcos aparecerán en monocromo.
+- **Texto cortado o desalineado**: agranda la ventana a 100x30 o más antes de iniciar.
+- **Símbolos extraños**: la terminal no está en UTF-8 o la fuente no tiene esos caracteres.
+- **Code::Blocks no compila**: revisa que el kit MinGW esté instalado y seleccionado.
+- **Cursor visible o pantalla sin limpiar en Linux/macOS**: la terminal no interpreta
+  secuencias ANSI.
