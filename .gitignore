@@ -1,2 +1,16 @@
-bin/tests/
-obj/Tests/
+# Build output (make, Code::Blocks)
+bin/
+obj/
+*.o
+*.obj
+*.exe
+
+# Code::Blocks per-user and generated files (Blackjack.cbp stays tracked)
+*.layout
+*.depend
+*.cscope_file_list
+
+# Editors and tooling
+cscope.*
+.vscode/
+.idea/
