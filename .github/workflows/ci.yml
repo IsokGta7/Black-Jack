@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  unix:
+    name: ${{ matrix.os }} (${{ matrix.cxx }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            cxx: g++
+          - os: macos-latest
+            cxx: clang++
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the game
+        run: make CXX=${{ matrix.cxx }}
+      - name: Build and run the tests
+        run: make test CXX=${{ matrix.cxx }}
+
+  windows:
+    name: windows-latest (MinGW-w64 g++)
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: false
+          install: make mingw-w64-ucrt-x86_64-gcc
+      - name: Build the game
+        run: make
+      - name: Build and run the tests
+        run: make test
